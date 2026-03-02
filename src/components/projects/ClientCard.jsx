@@ -23,7 +23,15 @@ export default function ClientCard({ client, tasks, onClick, onEdit, onDelete })
       <div className="p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: client.color || "#3B82F6" }} />
+            {client.icon_url ? (
+              <img src={client.icon_url} alt="ícone" className="w-7 h-7 rounded-lg object-cover flex-shrink-0" />
+            ) : (
+              <div className="w-7 h-7 rounded-lg flex-shrink-0" style={{ backgroundColor: (client.color || "#3B82F6") + "30" }}>
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: client.color || "#3B82F6" }} />
+                </div>
+              </div>
+            )}
             <h3 className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">{client.name}</h3>
           </div>
           <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
