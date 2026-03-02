@@ -190,6 +190,12 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
           )}
         </div>
       )}
+
+      <TaskDetailModal
+        task={detailTask}
+        open={!!detailTask}
+        onClose={() => setDetailTask(null)}
+      />
     </div>
   );
 }
