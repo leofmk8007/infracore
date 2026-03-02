@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Upload, FileText, X, Loader2 } from "lucide-react";
 
-export default function TaskDetailModal({ task, open, onClose }) {
+export default function TaskDetailModal({ task, open, onClose, isAdmin }) {
   const qc = useQueryClient();
   const fileInputRef = useRef({});
   const [newSubTaskTitle, setNewSubTaskTitle] = useState("");
