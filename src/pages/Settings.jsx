@@ -45,7 +45,19 @@ export default function Settings() {
     queryFn: () => base44.entities.AppSettings.list(),
   });
 
+  const { data: projectCustomList = [] } = useQuery({
+    queryKey: ["project_customization"],
+    queryFn: () => base44.entities.ProjectCustomization.list(),
+  });
+
+  const { data: taskCustomList = [] } = useQuery({
+    queryKey: ["task_customization"],
+    queryFn: () => base44.entities.TaskCustomization.list(),
+  });
+
   const settings = settingsList[0] || null;
+  const projectCustom = projectCustomList[0] || null;
+  const taskCustom = taskCustomList[0] || null;
 
   useEffect(() => {
     if (settings) {
@@ -55,11 +67,11 @@ export default function Settings() {
         logo_url: settings.logo_url || "",
         primary_color: settings.primary_color || DEFAULT_SETTINGS.primary_color,
         nav_items: settings.nav_items || DEFAULT_SETTINGS.nav_items,
-        project_statuses: settings.project_statuses || DEFAULT_SETTINGS.project_statuses,
-        task_statuses: settings.task_statuses || DEFAULT_SETTINGS.task_statuses,
+        project_statuses: projectCustom?.statuses || DEFAULT_SETTINGS.project_statuses,
+        task_statuses: taskCustom?.statuses || DEFAULT_SETTINGS.task_statuses,
       });
     }
-  }, [settings]);
+  }, [settings, projectCustom, taskCustom]);
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
