@@ -19,7 +19,7 @@ const STATUS_ICON = {
   rejected: XCircle,
 };
 
-function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses }) {
+function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses, taskFields = [] }) {
   const statusConfig = taskStatuses.find(s => s.id === task.status);
   const label = statusConfig?.label || "Desconhecido";
   const color = statusConfig?.color || "#6B7280";
@@ -45,6 +45,26 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses }) {
         </p>
         {task.description && (
           <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{task.description}</p>
+        )}
+        {/* Campos customizados visíveis */}
+        {taskFields.length > 0 && task.custom_fields && (
+          <div className="flex gap-2 mt-1.5 flex-wrap">
+            {taskFields.map(field => {
+              const value = task.custom_fields[field.id];
+              if (!value) return null;
+              
+              let displayValue = value;
+              if (field.type === "select") {
+                displayValue = field.options?.find(o => o.id === value)?.label || value;
+              }
+              
+              return (
+                <span key={field.id} className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">
+                  <span className="font-medium">{field.label}:</span> {displayValue}
+                </span>
+              );
+            })}
+          </div>
         )}
       </div>
 
