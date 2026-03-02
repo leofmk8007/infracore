@@ -42,7 +42,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 h-14">
-        <h1 className="text-lg font-bold text-gray-900">ProjectFlow</h1>
+        <h1 className="text-lg font-bold text-gray-900">Atlas</h1>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
