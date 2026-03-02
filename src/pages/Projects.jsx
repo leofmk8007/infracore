@@ -13,6 +13,7 @@ export default function Projects() {
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("created_date");
   const [currentUser, setCurrentUser] = useState(null);
   const qc = useQueryClient();
 
