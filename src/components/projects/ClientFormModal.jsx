@@ -33,7 +33,7 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div>
-            <Label htmlFor="name">Nome do projeto *</Label>
+            <Label htmlFor="name">Nome da obra *</Label>
             <Input
               id="name"
               className="mt-1"
