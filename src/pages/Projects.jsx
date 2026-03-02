@@ -59,7 +59,7 @@ export default function Projects() {
   };
 
   const handleDeleteClient = async (client) => {
-    if (!confirm(`Excluir o projeto "${client.name}"? As tarefas também serão excluídas.`)) return;
+    if (!confirm(`Excluir a obra "${client.name}"? Os serviços e tarefas também serão excluídos.`)) return;
     const clientTasks = tasks.filter((t) => t.client_id === client.id);
     const clientSubs = subProjects.filter((s) => s.client_id === client.id);
     await Promise.all([
@@ -117,8 +117,8 @@ export default function Projects() {
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projetos</h1>
-          <p className="text-gray-500 text-sm mt-1">{clients.length} projeto{clients.length !== 1 ? "s" : ""} cadastrado{clients.length !== 1 ? "s" : ""}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Obras</h1>
+          <p className="text-gray-500 text-sm mt-1">{clients.length} obra{clients.length !== 1 ? "s" : ""} cadastrada{clients.length !== 1 ? "s" : ""}</p>
         </div>
         <div className="flex items-center gap-2">
           {/* View toggle */}
@@ -137,7 +137,7 @@ export default function Projects() {
             </button>
           </div>
           <Button onClick={() => { setEditingClient(null); setShowModal(true); }} className="flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Novo Projeto
+            <Plus className="w-4 h-4" /> Nova Obra
           </Button>
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function Projects() {
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
         <Input
-          placeholder="Buscar projetos..."
+          placeholder="Buscar obras..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -156,9 +156,9 @@ export default function Projects() {
       {filtered.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p className="text-base font-medium">Nenhum projeto encontrado</p>
+          <p className="text-base font-medium">Nenhuma obra encontrada</p>
           <p className="text-sm mt-1">
-            {search ? "Tente um termo diferente" : "Clique em 'Novo Projeto' para começar"}
+            {search ? "Tente um termo diferente" : "Clique em 'Nova Obra' para começar"}
           </p>
         </div>
       ) : viewMode === "cards" ? (
@@ -248,7 +248,7 @@ function ProjectFolderRow({ client, subProjects, tasks, percent, onOpen, onEdit,
       {open && (
         <div className="ml-6 border-l-2 border-gray-100 pl-2 space-y-0.5 mb-1">
           {subProjects.length === 0 ? (
-            <p className="text-xs text-gray-400 py-1 pl-2 italic">Nenhuma etapa</p>
+            <p className="text-xs text-gray-400 py-1 pl-2 italic">Nenhum serviço</p>
           ) : (
             subProjects.map((sub) => {
               const subTasks = tasks.filter((t) => t.sub_project_id === sub.id);
