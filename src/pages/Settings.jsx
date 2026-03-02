@@ -84,21 +84,46 @@ export default function Settings() {
 
   const handleSave = async () => {
     // Filtrar itens vazios antes de salvar
-    const filteredForm = {
-      ...form,
-      nav_items: form.nav_items.filter(item => item.name && item.page),
-      project_statuses: form.project_statuses.filter(s => s.id && s.label),
-      task_statuses: form.task_statuses.filter(s => s.id && s.label),
-    };
+    const filteredNavItems = form.nav_items.filter(item => item.name && item.page);
+    const filteredProjectStatuses = form.project_statuses.filter(s => s.id && s.label);
+    const filteredTaskStatuses = form.task_statuses.filter(s => s.id && s.label);
 
     setSaving(true);
     try {
+      // Save AppSettings (sem project_statuses e task_statuses)
+      const appSettingsData = {
+        app_name: form.app_name,
+        app_description: form.app_description,
+        logo_url: form.logo_url,
+        primary_color: form.primary_color,
+        nav_items: filteredNavItems,
+      };
+
       if (settings && settings.id) {
-        await base44.entities.AppSettings.update(settings.id, filteredForm);
+        await base44.entities.AppSettings.update(settings.id, appSettingsData);
       } else {
-        await base44.entities.AppSettings.create(filteredForm);
+        await base44.entities.AppSettings.create(appSettingsData);
       }
+
+      // Save ProjectCustomization
+      const projectCustomData = { statuses: filteredProjectStatuses };
+      if (projectCustom && projectCustom.id) {
+        await base44.entities.ProjectCustomization.update(projectCustom.id, projectCustomData);
+      } else {
+        await base44.entities.ProjectCustomization.create(projectCustomData);
+      }
+
+      // Save TaskCustomization
+      const taskCustomData = { statuses: filteredTaskStatuses };
+      if (taskCustom && taskCustom.id) {
+        await base44.entities.TaskCustomization.update(taskCustom.id, taskCustomData);
+      } else {
+        await base44.entities.TaskCustomization.create(taskCustomData);
+      }
+
       qc.invalidateQueries({ queryKey: ["app_settings"] });
+      qc.invalidateQueries({ queryKey: ["project_customization"] });
+      qc.invalidateQueries({ queryKey: ["task_customization"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (error) {
