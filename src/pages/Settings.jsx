@@ -219,11 +219,12 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="general">Geral</TabsTrigger>
           <TabsTrigger value="nav">Menu</TabsTrigger>
           <TabsTrigger value="projects">Projetos</TabsTrigger>
-          <TabsTrigger value="tasks">Tarefas</TabsTrigger>
+          <TabsTrigger value="tasks">Status Tarefas</TabsTrigger>
+          <TabsTrigger value="task-fields">Campos Tarefas</TabsTrigger>
         </TabsList>
 
         {/* Geral */}
