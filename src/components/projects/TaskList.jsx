@@ -13,47 +13,6 @@ const STATUS_CONFIG = {
   rejected: { label: "Reprovada", icon: XCircle, className: "bg-red-100 text-red-700 border-red-200" },
 };
 
-function TaskRow({ task, onStatusChange, onDelete, onEdit, onOpenDetail }) {
-  const cfg = STATUS_CONFIG[task.status] || STATUS_CONFIG.under_review;
-  const Icon = cfg.icon;
-
-  const nextStatus = { under_review: "approved", approved: "rejected", rejected: "under_review" };
-
-  return (
-    <div className="flex items-start gap-3 py-3 px-4 hover:bg-gray-50 rounded-lg group transition-colors">
-      <button
-        onClick={() => onStatusChange(task, nextStatus[task.status])}
-        className="mt-0.5 flex-shrink-0"
-        title="Clique para mudar status"
-      >
-        <Icon className={`w-5 h-5 ${task.status === "approved" ? "text-green-500" : task.status === "rejected" ? "text-red-400" : "text-yellow-500"}`} />
-      </button>
-
-      <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onOpenDetail(task)}>
-        <p className={`text-sm font-medium hover:text-blue-600 transition-colors ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-900"}`}>
-          {task.title}
-        </p>
-        {task.description && (
-          <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{task.description}</p>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.className}`}>{cfg.label}</span>
-        <button onClick={() => onEdit(task)} className="p-1 text-gray-400 hover:text-gray-700 rounded">
-          <Pencil className="w-3.5 h-3.5" />
-        </button>
-        <button onClick={() => onDelete(task)} className="p-1 text-gray-400 hover:text-red-500 rounded">
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
-      </div>
-      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.className} opacity-100 group-hover:hidden flex-shrink-0`}>
-        {cfg.label}
-      </span>
-    </div>
-  );
-}
-
 // ─── Folder section grouped by SubProject ───
 function FolderSection({ subProject, allSubProjects, tasks, clientId, depth = 0, onOpenDetail }) {
   const [open, setOpen] = useState(true);
