@@ -425,6 +425,102 @@ export default function Settings() {
             <Plus className="w-4 h-4" /> Adicionar status
           </Button>
         </TabsContent>
+
+        {/* Campos Tarefas */}
+        <TabsContent value="task-fields" className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+          <div className="space-y-4">
+            {form.task_fields?.map((field, idx) => (
+              <div key={`field-${idx}`} className="border border-gray-100 rounded-lg p-4 space-y-3">
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1">
+                    <Label className="text-xs font-medium text-gray-700">ID do Campo</Label>
+                    <Input
+                      value={field.id}
+                      onChange={(e) => updateField(idx, "id", e.target.value)}
+                      placeholder="Ex: deadline"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Label className="text-xs font-medium text-gray-700">Rótulo</Label>
+                    <Input
+                      value={field.label}
+                      onChange={(e) => updateField(idx, "label", e.target.value)}
+                      placeholder="Ex: Prazo"
+                      className="mt-1"
+                    />
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => removeField(idx)} className="text-red-500 hover:bg-red-50 hover:text-red-700">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Label className="text-xs font-medium text-gray-700">Tipo</Label>
+                    <select
+                      value={field.type}
+                      onChange={(e) => updateField(idx, "type", e.target.value)}
+                      className="w-full mt-1 px-3 py-1.5 border border-gray-200 rounded-md text-sm"
+                    >
+                      <option value="text">Texto</option>
+                      <option value="date">Data</option>
+                      <option value="select">Seleção</option>
+                      <option value="number">Número</option>
+                      <option value="file">Arquivo</option>
+                    </select>
+                  </div>
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={field.required}
+                        onChange={(e) => updateField(idx, "required", e.target.checked)}
+                        className="rounded"
+                      />
+                      <span className="text-xs font-medium text-gray-700">Obrigatório</span>
+                    </label>
+                  </div>
+                </div>
+
+                {field.type === "select" && (
+                  <div className="space-y-2 pl-2 border-l-2 border-gray-200">
+                    <Label className="text-xs font-medium text-gray-700">Opções</Label>
+                    <div className="space-y-2">
+                      {field.options?.map((opt, optIdx) => (
+                        <div key={optIdx} className="flex gap-2 items-end">
+                          <Input
+                            value={opt.id}
+                            onChange={(e) => updateFieldOption(idx, optIdx, "id", e.target.value)}
+                            placeholder="ID"
+                            size="sm"
+                            className="w-20"
+                          />
+                          <Input
+                            value={opt.label}
+                            onChange={(e) => updateFieldOption(idx, optIdx, "label", e.target.value)}
+                            placeholder="Rótulo"
+                            size="sm"
+                            className="flex-1"
+                          />
+                          <Button variant="ghost" size="sm" onClick={() => removeFieldOption(idx, optIdx)} className="text-red-500 hover:bg-red-50">
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => addFieldOption(idx)} className="w-full gap-1 text-xs">
+                      <Plus className="w-3 h-3" /> Opção
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <Button variant="outline" onClick={addField} className="w-full gap-2">
+            <Plus className="w-4 h-4" /> Adicionar Campo
+          </Button>
+        </TabsContent>
       </Tabs>
 
       {/* Save */}
