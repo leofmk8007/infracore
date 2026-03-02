@@ -82,9 +82,9 @@ export default function Settings() {
     setSaving(true);
     try {
       if (settings && settings.id) {
-        await base44.entities.AppSettings.update(settings.id, form);
+        await base44.entities.AppSettings.update(settings.id, filteredForm);
       } else {
-        await base44.entities.AppSettings.create(form);
+        await base44.entities.AppSettings.create(filteredForm);
       }
       qc.invalidateQueries({ queryKey: ["app_settings"] });
       setSaved(true);
