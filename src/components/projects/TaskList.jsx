@@ -220,7 +220,7 @@ export default function TaskList({ client, tasks, onBack }) {
         {/* Form */}
         <div className="px-4">
           {showForm && !editingTask && (
-            <TaskForm clientId={client.id} onClose={() => setShowForm(false)} />
+            <TaskForm clientId={client.id} onClose={() => setShowForm(false)} taskStatuses={taskStatuses} />
           )}
         </div>
 
