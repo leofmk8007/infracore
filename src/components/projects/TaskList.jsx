@@ -53,7 +53,6 @@ function FolderSection({ subProject, allSubProjects, tasks, clientId, depth = 0,
   const percent = myTasks.length ? Math.round((approved / myTasks.length) * 100) : 0;
 
   const handleStatusChange = async (task, newStatus) => {
-    if (!isAdmin) return;
     await base44.entities.Task.update(task.id, { status: newStatus });
     qc.invalidateQueries(["tasks"]);
   };
