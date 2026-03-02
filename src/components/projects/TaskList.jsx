@@ -13,7 +13,7 @@ const STATUS_CONFIG = {
   rejected: { label: "Reprovada", icon: XCircle, className: "bg-red-100 text-red-700 border-red-200" },
 };
 
-function TaskRow({ task, onStatusChange, onDelete, onEdit }) {
+function TaskRow({ task, onStatusChange, onDelete, onEdit, onOpenDetail }) {
   const cfg = STATUS_CONFIG[task.status] || STATUS_CONFIG.under_review;
   const Icon = cfg.icon;
 
@@ -29,8 +29,8 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit }) {
         <Icon className={`w-5 h-5 ${task.status === "approved" ? "text-green-500" : task.status === "rejected" ? "text-red-400" : "text-yellow-500"}`} />
       </button>
 
-      <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-900"}`}>
+      <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onOpenDetail(task)}>
+        <p className={`text-sm font-medium hover:text-blue-600 transition-colors ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-900"}`}>
           {task.title}
         </p>
         {task.description && (
