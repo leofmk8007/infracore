@@ -31,12 +31,13 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
   const projectStatuses = settings?.project_statuses || DEFAULT_STATUSES;
 
   useEffect(() => {
+    const defaultStatus = projectStatuses[0]?.id || "active";
     if (client) {
-      setForm({ name: client.name || "", description: client.description || "", status: client.status || "active", color: client.color || "#3B82F6", icon_url: client.icon_url || "" });
+      setForm({ name: client.name || "", description: client.description || "", status: client.status || defaultStatus, color: client.color || "#3B82F6", icon_url: client.icon_url || "" });
     } else {
-      setForm({ name: "", description: "", status: "active", color: "#3B82F6", icon_url: "" });
+      setForm({ name: "", description: "", status: defaultStatus, color: "#3B82F6", icon_url: "" });
     }
-  }, [client, open]);
+  }, [client, open, projectStatuses]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
