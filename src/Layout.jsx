@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { LayoutDashboard, Users, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
 
 export default function Layout({ children, currentPageName }) {
