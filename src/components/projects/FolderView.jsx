@@ -181,6 +181,7 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
                 onStatusChange={handleStatusChange}
                 onEdit={(t) => { setEditingTask(t); setShowTaskForm(false); }}
                 onDelete={handleDeleteTask}
+                onOpenDetail={(t) => setDetailTask(t)}
               />
             )
           )}
