@@ -66,11 +66,12 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses }) {
   );
 }
 
-function TaskForm({ clientId, task, onClose, taskStatuses }) {
+function TaskForm({ clientId, task, onClose, taskStatuses, taskFields = [] }) {
   const [form, setForm] = useState({ 
     title: task?.title || "", 
     description: task?.description || "", 
-    status: task?.status || (taskStatuses[0]?.id || "under_review")
+    status: task?.status || (taskStatuses[0]?.id || "under_review"),
+    custom_fields: task?.custom_fields || {}
   });
   const qc = useQueryClient();
 
@@ -78,12 +79,99 @@ function TaskForm({ clientId, task, onClose, taskStatuses }) {
     e.preventDefault();
     if (!form.title.trim()) return;
     if (task) {
-      await base44.entities.Task.update(task.id, form);
+      await base44.entities.Task.update(task.id, { title: form.title, description: form.description, status: form.status, custom_fields: form.custom_fields });
     } else {
-      await base44.entities.Task.create({ ...form, client_id: clientId, status: form.status });
+      await base44.entities.Task.create({ title: form.title, description: form.description, client_id: clientId, status: form.status, custom_fields: form.custom_fields });
     }
     qc.invalidateQueries(["tasks"]);
     onClose();
+  };
+
+  const handleCustomFieldChange = (fieldId, value) => {
+    setForm(prev => ({
+      ...prev,
+      custom_fields: { ...prev.custom_fields, [fieldId]: value }
+    }));
+  };
+
+  const renderCustomField = (field) => {
+    const value = form.custom_fields[field.id] || "";
+    
+    if (field.type === "date") {
+      return (
+        <div key={field.id}>
+          <label className="text-xs font-medium text-gray-700">{field.label}</label>
+          <Input
+            type="date"
+            value={value}
+            onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+            required={field.required}
+            className="mt-1 bg-white"
+          />
+        </div>
+      );
+    }
+    
+    if (field.type === "select") {
+      return (
+        <div key={field.id}>
+          <label className="text-xs font-medium text-gray-700">{field.label}</label>
+          <Select value={value} onValueChange={(v) => handleCustomFieldChange(field.id, v)}>
+            <SelectTrigger className="mt-1 bg-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {field.options?.map(opt => (
+                <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      );
+    }
+    
+    if (field.type === "number") {
+      return (
+        <div key={field.id}>
+          <label className="text-xs font-medium text-gray-700">{field.label}</label>
+          <Input
+            type="number"
+            value={value}
+            onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+            required={field.required}
+            className="mt-1 bg-white"
+          />
+        </div>
+      );
+    }
+
+    if (field.type === "file") {
+      return (
+        <div key={field.id}>
+          <label className="text-xs font-medium text-gray-700">{field.label}</label>
+          <Input
+            type="file"
+            onChange={(e) => handleCustomFieldChange(field.id, e.target.files[0]?.name || "")}
+            required={field.required}
+            className="mt-1 bg-white"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div key={field.id}>
+        <label className="text-xs font-medium text-gray-700">{field.label}</label>
+        <Input
+          type="text"
+          placeholder={field.label}
+          value={value}
+          onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+          required={field.required}
+          className="mt-1 bg-white"
+        />
+      </div>
+    );
   };
 
   return (
@@ -103,6 +191,14 @@ function TaskForm({ clientId, task, onClose, taskStatuses }) {
         rows={2}
         className="bg-white"
       />
+
+      {/* Campos Customizados */}
+      {taskFields.length > 0 && (
+        <div className="space-y-2 pt-2 border-t border-blue-200">
+          {taskFields.map(field => renderCustomField(field))}
+        </div>
+      )}
+
       {task && (
         <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
           <SelectTrigger className="bg-white">
