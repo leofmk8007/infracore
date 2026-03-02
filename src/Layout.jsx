@@ -2,9 +2,22 @@ import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { LayoutDashboard, Users, Menu, X, Settings } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 export default function Layout({ children, currentPageName }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const { data: settingsList = [] } = useQuery({
+    queryKey: ["app_settings"],
+    queryFn: () => base44.entities.AppSettings.list(),
+    staleTime: 0,
+  });
+  const settings = settingsList[0] || {};
+  const appName = settings.app_name || "ProjectFlow";
+  const appDesc = settings.app_description || "Gestão de Projetos";
+  const logoUrl = settings.logo_url || "";
+  const primaryColor = settings.primary_color || "#3B82F6";
 
   const navItems = [
     { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
