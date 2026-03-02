@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ClientCard from "../components/projects/ClientCard";
 import ClientFormModal from "../components/projects/ClientFormModal";
-import FolderView from "../components/projects/FolderView";
+import FolderView from "../components/projects/FolderView.jsx";
 
 export default function Projects() {
   const [selectedClient, setSelectedClient] = useState(null);
