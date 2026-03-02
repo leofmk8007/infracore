@@ -98,6 +98,7 @@ function TaskForm({ clientId, task, onClose }) {
 export default function TaskList({ client, tasks, onBack }) {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [detailTask, setDetailTask] = useState(null);
   const [filter, setFilter] = useState("all");
   const qc = useQueryClient();
 
