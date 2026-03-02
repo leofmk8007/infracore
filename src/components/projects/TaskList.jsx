@@ -351,7 +351,7 @@ export default function TaskList({ client, tasks, onBack }) {
             filteredTasks.map((task) =>
               editingTask?.id === task.id ? (
                 <div key={task.id} className="px-0">
-                  <TaskForm clientId={client.id} task={task} onClose={() => setEditingTask(null)} taskStatuses={taskStatuses} />
+                  <TaskForm clientId={client.id} task={task} onClose={() => setEditingTask(null)} taskStatuses={taskStatuses} taskFields={taskFields} />
                 </div>
               ) : (
                 <TaskRow
@@ -361,6 +361,7 @@ export default function TaskList({ client, tasks, onBack }) {
                   onDelete={handleDelete}
                   onEdit={(t) => { setEditingTask(t); setShowForm(false); }}
                   taskStatuses={taskStatuses}
+                  taskFields={taskFields}
                 />
               )
             )
