@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import TaskDetailModal from "./TaskDetailModal";
 
 const STATUS_CONFIG = {
@@ -17,17 +16,17 @@ const STATUS_CONFIG = {
 };
 
 // ─── Inline form for sub-projects ───
-function SubProjectForm({ clientId, subProject, onClose }) {
-  const [form, setForm] = useState({ name: subProject?.name || "", description: subProject?.description || "" });
+function SubProjectForm({ clientId, parentId, subProject, onClose }) {
+  const [name, setName] = useState(subProject?.name || "");
   const qc = useQueryClient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return;
+    if (!name.trim()) return;
     if (subProject) {
-      await base44.entities.SubProject.update(subProject.id, form);
+      await base44.entities.SubProject.update(subProject.id, { name });
     } else {
-      await base44.entities.SubProject.create({ ...form, client_id: clientId });
+      await base44.entities.SubProject.create({ name, client_id: clientId, parent_id: parentId || null });
     }
     qc.invalidateQueries(["subprojects"]);
     onClose();
@@ -37,9 +36,9 @@ function SubProjectForm({ clientId, subProject, onClose }) {
     <form onSubmit={handleSubmit} className="flex items-center gap-2 py-1 px-2 bg-blue-50 rounded-lg border border-blue-100">
       <Input
         autoFocus
-        placeholder="Nome do serviço *"
-        value={form.name}
-        onChange={(e) => setForm({ ...form, name: e.target.value })}
+        placeholder="Nome da pasta *"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         required
         className="bg-white h-7 text-sm flex-1"
       />
@@ -51,28 +50,28 @@ function SubProjectForm({ clientId, subProject, onClose }) {
 
 // ─── Inline form for tasks ───
 function TaskForm({ clientId, subProjectId, task, onClose }) {
-  const [form, setForm] = useState({ title: task?.title || "", description: task?.description || "" });
+  const [title, setTitle] = useState(task?.title || "");
   const qc = useQueryClient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title.trim()) return;
+    if (!title.trim()) return;
     if (task) {
-      await base44.entities.Task.update(task.id, { ...form });
+      await base44.entities.Task.update(task.id, { title });
     } else {
-      await base44.entities.Task.create({ ...form, client_id: clientId, sub_project_id: subProjectId, status: "under_review" });
+      await base44.entities.Task.create({ title, client_id: clientId, sub_project_id: subProjectId, status: "under_review" });
     }
     qc.invalidateQueries(["tasks"]);
     onClose();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="ml-8 flex items-center gap-2 py-1 px-2 bg-gray-50 rounded-lg border border-gray-200">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 py-1 px-2 bg-gray-50 rounded-lg border border-gray-200">
       <Input
         autoFocus
         placeholder="Título da tarefa *"
-        value={form.title}
-        onChange={(e) => setForm({ ...form, title: e.target.value })}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
         required
         className="bg-white h-7 text-sm flex-1"
       />
@@ -89,7 +88,7 @@ function TaskRow({ task, onStatusChange, onEdit, onDelete, onOpenDetail }) {
   const nextStatus = { under_review: "approved", approved: "rejected", rejected: "under_review" };
 
   return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 group ml-8">
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 group">
       <FileText className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
       <button onClick={() => onStatusChange(task, nextStatus[task.status])} className="flex-shrink-0" title="Mudar status">
         <Icon className={`w-4 h-4 ${cfg.color}`} />
@@ -111,17 +110,22 @@ function TaskRow({ task, onStatusChange, onEdit, onDelete, onOpenDetail }) {
   );
 }
 
-// ─── SubProject Row (pasta filha) ───
-function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) {
+// ─── Recursive SubProject Node ───
+function SubProjectNode({ subProject, allSubProjects, tasks, clientId, depth = 0, onDeleteSub, onEditSub }) {
   const [open, setOpen] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [showSubForm, setShowSubForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [editingSub, setEditingSub] = useState(null);
   const [detailTask, setDetailTask] = useState(null);
   const qc = useQueryClient();
 
-  const subTasks = tasks.filter((t) => t.sub_project_id === subProject.id);
-  const approved = subTasks.filter((t) => t.status === "approved").length;
-  const percent = subTasks.length ? Math.round((approved / subTasks.length) * 100) : 0;
+  // Direct children folders
+  const children = allSubProjects.filter((s) => s.parent_id === subProject.id);
+  // Tasks belonging to this folder
+  const myTasks = tasks.filter((t) => t.sub_project_id === subProject.id);
+  const approved = myTasks.filter((t) => t.status === "approved").length;
+  const percent = myTasks.length ? Math.round((approved / myTasks.length) * 100) : 0;
 
   const handleStatusChange = async (task, newStatus) => {
     await base44.entities.Task.update(task.id, { status: newStatus });
@@ -133,15 +137,22 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
     qc.invalidateQueries(["tasks"]);
   };
 
+  const handleDeleteChild = async (sub) => {
+    if (!confirm(`Excluir a pasta "${sub.name}"? As tarefas e subpastas também serão excluídas.`)) return;
+    await deleteFolderRecursive(sub, allSubProjects, tasks);
+    qc.invalidateQueries(["subprojects"]);
+    qc.invalidateQueries(["tasks"]);
+  };
+
   return (
-    <div className="ml-4 border-l-2 border-gray-100 pl-2">
-      {/* Sub-project header */}
+    <div className="border-l-2 border-gray-100 pl-2">
+      {/* Folder header */}
       <div className="flex items-center gap-1.5 py-1.5 px-2 rounded-lg hover:bg-gray-50 group cursor-pointer" onClick={() => setOpen(!open)}>
         {open ? <ChevronDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />}
         {open ? <FolderOpen className="w-4 h-4 text-amber-400 flex-shrink-0" /> : <Folder className="w-4 h-4 text-amber-400 flex-shrink-0" />}
         <span className="text-sm font-medium text-gray-800 flex-1">{subProject.name}</span>
 
-        {subTasks.length > 0 && (
+        {myTasks.length > 0 && (
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <div className="w-16 bg-gray-200 rounded-full h-1">
               <div className="bg-green-400 h-1 rounded-full" style={{ width: `${percent}%` }} />
@@ -151,6 +162,13 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
         )}
 
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-1" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => { setShowSubForm(true); setEditingSub(null); }}
+            className="p-1 text-gray-400 hover:text-blue-600 rounded text-xs flex items-center gap-0.5"
+            title="Nova subpasta"
+          >
+            <Folder className="w-3 h-3" /><Plus className="w-2.5 h-2.5" />
+          </button>
           <button
             onClick={() => { setShowTaskForm(true); setEditingTask(null); }}
             className="p-1 text-gray-400 hover:text-blue-600 rounded text-xs flex items-center gap-0.5"
@@ -163,17 +181,50 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
         </div>
       </div>
 
-      {/* Tasks */}
       {open && (
-        <div className="space-y-0.5">
+        <div className="space-y-0.5 ml-4">
+          {/* New subfolder form */}
+          {showSubForm && !editingSub && (
+            <SubProjectForm
+              clientId={clientId}
+              parentId={subProject.id}
+              onClose={() => setShowSubForm(false)}
+            />
+          )}
+
+          {/* Child folders (recursive) */}
+          {children.map((child) =>
+            editingSub?.id === child.id ? (
+              <SubProjectForm
+                key={child.id}
+                clientId={clientId}
+                parentId={subProject.id}
+                subProject={child}
+                onClose={() => setEditingSub(null)}
+              />
+            ) : (
+              <SubProjectNode
+                key={child.id}
+                subProject={child}
+                allSubProjects={allSubProjects}
+                tasks={tasks}
+                clientId={clientId}
+                depth={depth + 1}
+                onDeleteSub={handleDeleteChild}
+                onEditSub={(s) => { setEditingSub(s); setShowSubForm(false); }}
+              />
+            )
+          )}
+
+          {/* New task form */}
           {showTaskForm && (
             <TaskForm clientId={clientId} subProjectId={subProject.id} onClose={() => setShowTaskForm(false)} />
           )}
-          {subTasks.map((task) =>
+
+          {/* Tasks */}
+          {myTasks.map((task) =>
             editingTask?.id === task.id ? (
-              <div key={task.id} className="ml-8">
-                <TaskForm clientId={clientId} subProjectId={subProject.id} task={task} onClose={() => setEditingTask(null)} />
-              </div>
+              <TaskForm key={task.id} clientId={clientId} subProjectId={subProject.id} task={task} onClose={() => setEditingTask(null)} />
             ) : (
               <TaskRow
                 key={task.id}
@@ -185,8 +236,9 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
               />
             )
           )}
-          {subTasks.length === 0 && !showTaskForm && (
-            <p className="ml-8 text-xs text-gray-400 py-1 italic">Nenhuma tarefa — clique em + para adicionar</p>
+
+          {children.length === 0 && myTasks.length === 0 && !showTaskForm && !showSubForm && (
+            <p className="text-xs text-gray-400 py-1 italic">Pasta vazia</p>
           )}
         </div>
       )}
@@ -200,6 +252,15 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
   );
 }
 
+// Helper: recursively delete a folder and its children/tasks
+async function deleteFolderRecursive(sub, allSubProjects, tasks) {
+  const children = allSubProjects.filter((s) => s.parent_id === sub.id);
+  await Promise.all(children.map((c) => deleteFolderRecursive(c, allSubProjects, tasks)));
+  const subTasks = tasks.filter((t) => t.sub_project_id === sub.id);
+  await Promise.all(subTasks.map((t) => base44.entities.Task.delete(t.id)));
+  await base44.entities.SubProject.delete(sub.id);
+}
+
 // ─── Main FolderView ───
 export default function FolderView({ client, subProjects, tasks, onBack }) {
   const [open, setOpen] = useState(true);
@@ -208,15 +269,15 @@ export default function FolderView({ client, subProjects, tasks, onBack }) {
   const qc = useQueryClient();
 
   const clientSubProjects = subProjects.filter((s) => s.client_id === client.id);
+  // Root-level folders: no parent_id or parent_id is null/undefined
+  const rootSubProjects = clientSubProjects.filter((s) => !s.parent_id);
   const clientTasks = tasks.filter((t) => t.client_id === client.id);
   const approved = clientTasks.filter((t) => t.status === "approved").length;
   const percent = clientTasks.length ? Math.round((approved / clientTasks.length) * 100) : 0;
 
   const handleDeleteSub = async (sub) => {
-    if (!confirm(`Excluir o serviço "${sub.name}"? As tarefas também serão excluídas.`)) return;
-    const subTasks = tasks.filter((t) => t.sub_project_id === sub.id);
-    await Promise.all(subTasks.map((t) => base44.entities.Task.delete(t.id)));
-    await base44.entities.SubProject.delete(sub.id);
+    if (!confirm(`Excluir a pasta "${sub.name}"? As tarefas e subpastas também serão excluídas.`)) return;
+    await deleteFolderRecursive(sub, clientSubProjects, tasks);
     qc.invalidateQueries(["subprojects"]);
     qc.invalidateQueries(["tasks"]);
   };
@@ -250,7 +311,6 @@ export default function FolderView({ client, subProjects, tasks, onBack }) {
 
         {/* Tree */}
         <div className="p-4">
-          {/* Root project folder */}
           <div
             className="flex items-center gap-1.5 py-1.5 px-2 rounded-lg hover:bg-gray-50 cursor-pointer group"
             onClick={() => setOpen(!open)}
@@ -264,38 +324,38 @@ export default function FolderView({ client, subProjects, tasks, onBack }) {
             <button
               onClick={(e) => { e.stopPropagation(); setShowSubForm(true); setEditingSub(null); }}
               className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded border border-transparent hover:border-blue-200 hover:bg-blue-50"
-              >
-                <Plus className="w-3.5 h-3.5" /> Novo Serviço
+            >
+              <Plus className="w-3.5 h-3.5" /> Nova Pasta
             </button>
           </div>
 
           {open && (
-            <div className="space-y-1 mt-1">
+            <div className="space-y-1 mt-1 ml-4">
               {showSubForm && !editingSub && (
-                <div className="ml-4">
-                  <SubProjectForm clientId={client.id} onClose={() => setShowSubForm(false)} />
-                </div>
+                <SubProjectForm clientId={client.id} parentId={null} onClose={() => setShowSubForm(false)} />
               )}
 
-              {clientSubProjects.length === 0 && !showSubForm && (
-                <p className="ml-8 text-xs text-gray-400 py-2 italic">Nenhum serviço criado — clique em "+ Novo Serviço"</p>
+              {rootSubProjects.length === 0 && !showSubForm && (
+                <p className="text-xs text-gray-400 py-2 italic">Nenhuma pasta criada — clique em "+ Nova Pasta"</p>
               )}
 
-              {clientSubProjects.map((sub) =>
+              {rootSubProjects.map((sub) =>
                 editingSub?.id === sub.id ? (
-                  <div key={sub.id} className="ml-4">
-                    <SubProjectForm
-                      clientId={client.id}
-                      subProject={sub}
-                      onClose={() => setEditingSub(null)}
-                    />
-                  </div>
+                  <SubProjectForm
+                    key={sub.id}
+                    clientId={client.id}
+                    parentId={null}
+                    subProject={sub}
+                    onClose={() => setEditingSub(null)}
+                  />
                 ) : (
-                  <SubProjectRow
+                  <SubProjectNode
                     key={sub.id}
                     subProject={sub}
+                    allSubProjects={clientSubProjects}
                     tasks={tasks}
                     clientId={client.id}
+                    depth={0}
                     onDeleteSub={handleDeleteSub}
                     onEditSub={(s) => { setEditingSub(s); setShowSubForm(false); }}
                   />
