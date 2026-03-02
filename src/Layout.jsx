@@ -29,9 +29,12 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col w-60 bg-white border-r border-gray-200 fixed h-full z-10">
-        <div className="p-6 border-b border-gray-100">
-          <h1 className="text-xl font-bold text-gray-900">ProjectFlow</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Gestão de Projetos</p>
+        <div className="p-6 border-b border-gray-100 flex items-center gap-3">
+          {logoUrl && <img src={logoUrl} alt="logo" className="w-8 h-8 rounded-lg object-cover flex-shrink-0" />}
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">{appName}</h1>
+            <p className="text-xs text-gray-400 mt-0.5">{appDesc}</p>
+          </div>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
