@@ -22,13 +22,13 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef();
 
-  const { data: settingsList = [] } = useQuery({
-    queryKey: ["app_settings"],
-    queryFn: () => base44.entities.AppSettings.list(),
+  const { data: projectCustomList = [] } = useQuery({
+    queryKey: ["project_customization"],
+    queryFn: () => base44.entities.ProjectCustomization.list(),
   });
 
-  const settings = settingsList[0];
-  const projectStatuses = settings?.project_statuses || DEFAULT_STATUSES;
+  const projectCustom = projectCustomList[0];
+  const projectStatuses = projectCustom?.statuses || DEFAULT_STATUSES;
 
   useEffect(() => {
     const defaultStatus = projectStatuses[0]?.id || "active";
