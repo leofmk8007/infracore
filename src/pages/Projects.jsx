@@ -1,18 +1,26 @@
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Plus, Search, FolderOpen } from "lucide-react";
+import { Plus, Search, FolderOpen, LayoutGrid, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ClientCard from "../components/projects/ClientCard";
 import ClientFormModal from "../components/projects/ClientFormModal";
 import TaskList from "../components/projects/TaskList";
+import ProjectKanbanBoard from "../components/projects/ProjectKanbanBoard";
+
+const DEFAULT_STATUSES = [
+  { id: "active", label: "Ativo", color: "#10B981" },
+  { id: "completed", label: "Concluído", color: "#3B82F6" },
+  { id: "on_hold", label: "Em espera", color: "#F59E0B" },
+];
 
 export default function Projects() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState("list");
   const qc = useQueryClient();
 
   // Read ?client= from URL
