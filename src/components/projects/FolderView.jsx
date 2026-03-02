@@ -36,7 +36,7 @@ function SubProjectForm({ clientId, subProject, onClose }) {
     <form onSubmit={handleSubmit} className="flex items-center gap-2 py-1 px-2 bg-blue-50 rounded-lg border border-blue-100">
       <Input
         autoFocus
-        placeholder="Nome da etapa *"
+        placeholder="Nome do serviço *"
         value={form.name}
         onChange={(e) => setForm({ ...form, name: e.target.value })}
         required
@@ -201,7 +201,7 @@ export default function FolderView({ client, subProjects, tasks, onBack }) {
   const percent = clientTasks.length ? Math.round((approved / clientTasks.length) * 100) : 0;
 
   const handleDeleteSub = async (sub) => {
-    if (!confirm(`Excluir a etapa "${sub.name}"? As tarefas também serão excluídas.`)) return;
+    if (!confirm(`Excluir o serviço "${sub.name}"? As tarefas também serão excluídas.`)) return;
     const subTasks = tasks.filter((t) => t.sub_project_id === sub.id);
     await Promise.all(subTasks.map((t) => base44.entities.Task.delete(t.id)));
     await base44.entities.SubProject.delete(sub.id);
@@ -252,8 +252,8 @@ export default function FolderView({ client, subProjects, tasks, onBack }) {
             <button
               onClick={(e) => { e.stopPropagation(); setShowSubForm(true); setEditingSub(null); }}
               className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded border border-transparent hover:border-blue-200 hover:bg-blue-50"
-            >
-              <Plus className="w-3.5 h-3.5" /> Nova etapa
+              >
+                <Plus className="w-3.5 h-3.5" /> Novo Serviço
             </button>
           </div>
 
@@ -266,7 +266,7 @@ export default function FolderView({ client, subProjects, tasks, onBack }) {
               )}
 
               {clientSubProjects.length === 0 && !showSubForm && (
-                <p className="ml-8 text-xs text-gray-400 py-2 italic">Nenhuma etapa criada — clique em "+ Nova etapa"</p>
+                <p className="ml-8 text-xs text-gray-400 py-2 italic">Nenhum serviço criado — clique em "+ Novo Serviço"</p>
               )}
 
               {clientSubProjects.map((sub) =>

@@ -29,7 +29,7 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{client ? "Editar Projeto" : "Novo Projeto"}</DialogTitle>
+          <DialogTitle>{client ? "Editar Obra" : "Nova Obra"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div>
@@ -37,7 +37,7 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
             <Input
               id="name"
               className="mt-1"
-              placeholder="Ex: Empresa ABC"
+              placeholder="Ex: Obra Centro Comercial"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
@@ -48,7 +48,7 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
             <Textarea
               id="description"
               className="mt-1"
-              placeholder="Descreva o projeto..."
+              placeholder="Descreva a obra..."
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
@@ -83,7 +83,7 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
           </div>
           <div className="flex gap-2 pt-2">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">Cancelar</Button>
-            <Button type="submit" className="flex-1">{client ? "Salvar" : "Criar Projeto"}</Button>
+            <Button type="submit" className="flex-1">{client ? "Salvar" : "Criar Obra"}</Button>
           </div>
         </form>
       </DialogContent>
