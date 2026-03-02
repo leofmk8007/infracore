@@ -43,13 +43,13 @@ export default function Projects() {
     queryFn: () => base44.entities.Task.list(),
   });
 
-  const { data: settingsList = [] } = useQuery({
-    queryKey: ["app_settings"],
-    queryFn: () => base44.entities.AppSettings.list(),
+  const { data: projectCustomList = [] } = useQuery({
+    queryKey: ["project_customization"],
+    queryFn: () => base44.entities.ProjectCustomization.list(),
   });
 
-  const settings = settingsList[0];
-  const projectStatuses = settings?.project_statuses || DEFAULT_STATUSES;
+  const projectCustom = projectCustomList[0];
+  const projectStatuses = projectCustom?.statuses || DEFAULT_STATUSES;
 
   const filtered = clients.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
