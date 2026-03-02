@@ -193,6 +193,7 @@ export default function TaskList({ client, tasks, onBack }) {
                   onStatusChange={handleStatusChange}
                   onDelete={handleDelete}
                   onEdit={(t) => { setEditingTask(t); setShowForm(false); }}
+                  onOpenDetail={(t) => setDetailTask(t)}
                 />
               )
             )
