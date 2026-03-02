@@ -131,11 +131,20 @@ export default function TaskList({ client, tasks, onBack }) {
   const [filter, setFilter] = useState("all");
   const qc = useQueryClient();
 
+  const { data: taskCustomList = [] } = useQuery({
+    queryKey: ["task_customization"],
+    queryFn: () => base44.entities.TaskCustomization.list(),
+  });
+
+  const taskCustom = taskCustomList[0];
+  const taskStatuses = taskCustom?.statuses || DEFAULT_TASK_STATUSES;
+
   const clientTasks = tasks.filter((t) => t.client_id === client.id);
 
   const filteredTasks = filter === "all" ? clientTasks : clientTasks.filter((t) => t.status === filter);
 
-  const approved = clientTasks.filter((t) => t.status === "approved").length;
+  const firstStatusId = taskStatuses[0]?.id || "approved";
+  const approved = clientTasks.filter((t) => t.status === firstStatusId).length;
   const percent = clientTasks.length ? Math.round((approved / clientTasks.length) * 100) : 0;
 
   const handleStatusChange = async (task, newStatus) => {
