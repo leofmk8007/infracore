@@ -170,6 +170,43 @@ export default function Settings() {
     }));
   };
 
+  const updateField = (index, field, value) => {
+    const updated = [...form.task_fields];
+    updated[index] = { ...updated[index], [field]: value };
+    setForm({ ...form, task_fields: updated });
+  };
+
+  const removeField = (index) => {
+    setForm({ ...form, task_fields: form.task_fields.filter((_, i) => i !== index) });
+  };
+
+  const addField = () => {
+    setForm(prev => ({
+      ...prev,
+      task_fields: [...prev.task_fields, { id: "", label: "", type: "text", required: false, options: [] }]
+    }));
+  };
+
+  const updateFieldOption = (fieldIndex, optIndex, field, value) => {
+    const updated = [...form.task_fields];
+    if (!updated[fieldIndex].options) updated[fieldIndex].options = [];
+    updated[fieldIndex].options[optIndex] = { ...updated[fieldIndex].options[optIndex], [field]: value };
+    setForm({ ...form, task_fields: updated });
+  };
+
+  const removeFieldOption = (fieldIndex, optIndex) => {
+    const updated = [...form.task_fields];
+    updated[fieldIndex].options = updated[fieldIndex].options.filter((_, i) => i !== optIndex);
+    setForm({ ...form, task_fields: updated });
+  };
+
+  const addFieldOption = (fieldIndex) => {
+    const updated = [...form.task_fields];
+    if (!updated[fieldIndex].options) updated[fieldIndex].options = [];
+    updated[fieldIndex].options.push({ id: "", label: "" });
+    setForm({ ...form, task_fields: updated });
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
