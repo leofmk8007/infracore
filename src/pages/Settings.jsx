@@ -254,8 +254,8 @@ export default function Settings() {
         {/* Projetos */}
          <TabsContent value="projects" className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
            <div className="space-y-3">
-             {form.project_statuses.map((status, idx) => (
-               <div key={status.id || idx} className="flex gap-2 items-end pb-3 border-b border-gray-100 last:border-b-0">
+             {form.project_statuses && form.project_statuses.length > 0 && form.project_statuses.map((status, idx) => (
+               <div key={`project-${idx}`} className="flex gap-2 items-end pb-3 border-b border-gray-100 last:border-b-0">
                 <div className="flex-1">
                   <Label className="text-xs font-medium text-gray-700">ID</Label>
                   <Input
