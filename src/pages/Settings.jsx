@@ -71,25 +71,29 @@ export default function Settings() {
   };
 
   const handleSave = async () => {
+    // Validar campos obrigatórios
+    const emptyNavItems = form.nav_items.some(item => !item.name || !item.page);
+    const emptyProjectStatuses = form.project_statuses.some(s => !s.id || !s.label);
+    const emptyTaskStatuses = form.task_statuses.some(s => !s.id || !s.label);
+
+    if (emptyNavItems || emptyProjectStatuses || emptyTaskStatuses) {
+      alert("Preencha todos os campos antes de salvar");
+      return;
+    }
+
     setSaving(true);
     try {
-      const dataToSave = {
-        ...form,
-        nav_items: form.nav_items.filter(item => item.name && item.page),
-        project_statuses: form.project_statuses.filter(s => s.id && s.label),
-        task_statuses: form.task_statuses.filter(s => s.id && s.label),
-      };
-      
       if (settings && settings.id) {
-        await base44.entities.AppSettings.update(settings.id, dataToSave);
+        await base44.entities.AppSettings.update(settings.id, form);
       } else {
-        await base44.entities.AppSettings.create(dataToSave);
+        await base44.entities.AppSettings.create(form);
       }
       qc.invalidateQueries({ queryKey: ["app_settings"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (error) {
       console.error("Erro ao salvar:", error);
+      alert("Erro ao salvar configurações");
     } finally {
       setSaving(false);
     }
