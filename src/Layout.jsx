@@ -9,6 +9,7 @@ export default function Layout({ children, currentPageName }) {
   const navItems = [
     { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
     { name: "Projetos", page: "Projects", icon: Users },
+    { name: "Configurações", page: "Settings", icon: Settings },
   ];
 
   return (
