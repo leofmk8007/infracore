@@ -119,19 +119,11 @@ function FolderSection({ subProject, allSubProjects, tasks, clientId, depth = 0,
             ) : (
               <div key={task.id} className="flex items-start gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 group transition-colors">
                 <FileText className="w-3.5 h-3.5 text-gray-300 flex-shrink-0 mt-0.5" />
-                {isAdmin ? (
-                  <button onClick={() => handleStatusChange(task, nextStatus[task.status])} className="flex-shrink-0 mt-0.5">
-                    {task.status === "approved" && <CheckCircle2 className="w-4 h-4 text-green-500" />}
-                    {task.status === "under_review" && <Clock className="w-4 h-4 text-yellow-500" />}
-                    {task.status === "rejected" && <XCircle className="w-4 h-4 text-red-400" />}
-                  </button>
-                ) : (
-                  <span className="flex-shrink-0 mt-0.5">
-                    {task.status === "approved" && <CheckCircle2 className="w-4 h-4 text-green-500" />}
-                    {task.status === "under_review" && <Clock className="w-4 h-4 text-yellow-500" />}
-                    {task.status === "rejected" && <XCircle className="w-4 h-4 text-red-400" />}
-                  </span>
-                )}
+                <button onClick={() => handleStatusChange(task, nextStatus[task.status])} className="flex-shrink-0 mt-0.5">
+                  {task.status === "approved" && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                  {task.status === "under_review" && <Clock className="w-4 h-4 text-yellow-500" />}
+                  {task.status === "rejected" && <XCircle className="w-4 h-4 text-red-400" />}
+                </button>
                 <button
                   className={`text-sm flex-1 text-left hover:text-blue-600 transition-colors ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-800"}`}
                   onClick={() => onOpenDetail(task)}
