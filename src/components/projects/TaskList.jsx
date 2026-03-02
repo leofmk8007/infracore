@@ -5,6 +5,7 @@ import { CheckCircle2, XCircle, Clock, Plus, Pencil, Trash2, ChevronLeft } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import TaskDetailModal from "./TaskDetailModal";
 
 const STATUS_CONFIG = {
   under_review: { label: "Em análise", icon: Clock, className: "bg-yellow-100 text-yellow-700 border-yellow-200" },
