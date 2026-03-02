@@ -200,6 +200,12 @@ export default function TaskList({ client, tasks, onBack }) {
           )}
         </div>
       </div>
+
+      <TaskDetailModal
+        task={detailTask}
+        open={!!detailTask}
+        onClose={() => setDetailTask(null)}
+      />
     </div>
   );
 }
