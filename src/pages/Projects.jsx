@@ -268,6 +268,3 @@ function ProjectFolderRow({ client, subProjects, tasks, percent, onOpen, onEdit,
     </div>
   );
 }
-
-// Need to import these for ProjectFolderRow
-import { ChevronDown, ChevronRight, Folder, Pencil, Trash2 } from "lucide-react";
