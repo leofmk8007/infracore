@@ -254,6 +254,7 @@ export default function TaskList({ client, tasks, onBack }) {
 
   const taskCustom = taskCustomList[0];
   const taskStatuses = taskCustom?.statuses || DEFAULT_TASK_STATUSES;
+  const taskFields = taskCustom?.fields || [];
 
   const clientTasks = tasks.filter((t) => t.client_id === client.id);
 
