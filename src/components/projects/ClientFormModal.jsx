@@ -118,9 +118,11 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Ativo</SelectItem>
-                <SelectItem value="completed">Concluído</SelectItem>
-                <SelectItem value="on_hold">Em espera</SelectItem>
+                {projectStatuses.map((status) => (
+                  <SelectItem key={status.id} value={status.id}>
+                    {status.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
