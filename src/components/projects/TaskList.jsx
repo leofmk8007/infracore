@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, XCircle, Clock, Plus, Pencil, Trash2, ChevronLeft } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2, XCircle, Clock, Plus, Pencil, Trash2, ChevronLeft, Folder, FolderOpen, ChevronDown, ChevronRight, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
