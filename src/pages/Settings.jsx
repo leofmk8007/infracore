@@ -129,7 +129,7 @@ export default function Settings() {
     const statusKey = type === "project" ? "project_statuses" : "task_statuses";
     setForm(prev => ({
       ...prev,
-      [statusKey]: [...prev[statusKey], { id: `${type}_${Date.now()}`, label: "", color: "#3B82F6" }]
+      [statusKey]: [...prev[statusKey], { id: "", label: "", color: "#3B82F6" }]
     }));
   };
 
