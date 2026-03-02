@@ -1,7 +1,5 @@
-import { CheckCircle2, XCircle, Clock, ChevronRight, MoreHorizontal, Pencil, Trash2, CalendarDays } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ChevronRight, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 const statusLabels = {
   active: { label: "Ativo", className: "bg-blue-100 text-blue-700" },
@@ -16,11 +14,6 @@ export default function ClientCard({ client, tasks, onClick, onEdit, onDelete })
   const under_review = clientTasks.filter((t) => t.status === "under_review").length;
   const percent = clientTasks.length ? Math.round((approved / clientTasks.length) * 100) : 0;
   const st = statusLabels[client.status] || statusLabels.active;
-
-  const lastUpdated = client.updated_date || client.created_date;
-  const lastUpdatedLabel = lastUpdated
-    ? formatDistanceToNow(new Date(lastUpdated), { addSuffix: true, locale: ptBR })
-    : null;
 
   return (
     <div
@@ -83,22 +76,8 @@ export default function ClientCard({ client, tasks, onClick, onEdit, onDelete })
       </div>
 
       <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
-        <div className="flex items-center gap-3">
-          <span>{clientTasks.length} tarefa{clientTasks.length !== 1 ? "s" : ""} no total</span>
-          {under_review > 0 && (
-            <span className="flex items-center gap-1 text-amber-500 font-medium">
-              <Clock className="w-3 h-3" /> {under_review} pendente{under_review !== 1 ? "s" : ""}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {lastUpdatedLabel && (
-            <span className="flex items-center gap-1 text-gray-400">
-              <CalendarDays className="w-3 h-3" /> {lastUpdatedLabel}
-            </span>
-          )}
-          <ChevronRight className="w-4 h-4 group-hover:text-blue-600 transition-colors" />
-        </div>
+        <span>{clientTasks.length} tarefa{clientTasks.length !== 1 ? "s" : ""} no total</span>
+        <ChevronRight className="w-4 h-4 group-hover:text-blue-600 transition-colors" />
       </div>
     </div>
   );

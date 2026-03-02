@@ -8,7 +8,7 @@ export default function Layout({ children, currentPageName }) {
 
   const navItems = [
     { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
-    { name: "Obras", page: "Projects", icon: Users },
+    { name: "Projetos", page: "Projects", icon: Users },
   ];
 
   return (
@@ -16,8 +16,8 @@ export default function Layout({ children, currentPageName }) {
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col w-60 bg-white border-r border-gray-200 fixed h-full z-10">
         <div className="p-6 border-b border-gray-100">
-          <h1 className="text-xl font-bold text-gray-900">Atlas</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Gestão de Obras</p>
+          <h1 className="text-xl font-bold text-gray-900">ProjectFlow</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Gestão de Projetos</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
@@ -42,7 +42,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 h-14">
-        <h1 className="text-lg font-bold text-gray-900">Atlas</h1>
+        <h1 className="text-lg font-bold text-gray-900">ProjectFlow</h1>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
