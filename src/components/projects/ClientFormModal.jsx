@@ -1,23 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { base44 } from "@/api/base44Client";
+import { ImagePlus, X } from "lucide-react";
 
 const COLORS = ["#3B82F6", "#8B5CF6", "#10B981", "#F59E0B", "#EF4444", "#EC4899", "#14B8A6", "#F97316"];
 
 export default function ClientFormModal({ open, onClose, onSave, client }) {
-  const [form, setForm] = useState({ name: "", description: "", status: "active", color: "#3B82F6" });
+  const [form, setForm] = useState({ name: "", description: "", status: "active", color: "#3B82F6", icon_url: "" });
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef();
 
   useEffect(() => {
     if (client) {
-      setForm({ name: client.name || "", description: client.description || "", status: client.status || "active", color: client.color || "#3B82F6" });
+      setForm({ name: client.name || "", description: client.description || "", status: client.status || "active", color: client.color || "#3B82F6", icon_url: client.icon_url || "" });
     } else {
-      setForm({ name: "", description: "", status: "active", color: "#3B82F6" });
+      setForm({ name: "", description: "", status: "active", color: "#3B82F6", icon_url: "" });
     }
   }, [client, open]);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setForm((f) => ({ ...f, icon_url: file_url }));
+    setUploading(false);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
