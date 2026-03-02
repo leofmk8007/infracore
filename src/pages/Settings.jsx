@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ImagePlus, X, Save, CheckCircle2 } from "lucide-react";
+import { ImagePlus, X, Save, CheckCircle2, Plus, Trash2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const COLORS = ["#3B82F6", "#8B5CF6", "#10B981", "#F59E0B", "#EF4444", "#EC4899", "#14B8A6", "#F97316"];
 
@@ -14,6 +15,21 @@ const DEFAULT_SETTINGS = {
   app_description: "Gestão de Projetos",
   logo_url: "",
   primary_color: "#3B82F6",
+  nav_items: [
+    { name: "Dashboard", page: "Dashboard" },
+    { name: "Projetos", page: "Projects" },
+    { name: "Configurações", page: "Settings" },
+  ],
+  project_statuses: [
+    { id: "active", label: "Ativo", color: "#10B981" },
+    { id: "completed", label: "Concluído", color: "#3B82F6" },
+    { id: "on_hold", label: "Em espera", color: "#F59E0B" },
+  ],
+  task_statuses: [
+    { id: "under_review", label: "Em análise", color: "#F59E0B" },
+    { id: "approved", label: "Aprovado", color: "#10B981" },
+    { id: "rejected", label: "Rejeitado", color: "#EF4444" },
+  ],
 };
 
 export default function Settings() {
@@ -38,6 +54,9 @@ export default function Settings() {
         app_description: settings.app_description || DEFAULT_SETTINGS.app_description,
         logo_url: settings.logo_url || "",
         primary_color: settings.primary_color || DEFAULT_SETTINGS.primary_color,
+        nav_items: settings.nav_items || DEFAULT_SETTINGS.nav_items,
+        project_statuses: settings.project_statuses || DEFAULT_SETTINGS.project_statuses,
+        task_statuses: settings.task_statuses || DEFAULT_SETTINGS.task_statuses,
       });
     }
   }, [settings]);
@@ -64,97 +83,263 @@ export default function Settings() {
     setTimeout(() => setSaved(false), 2500);
   };
 
+  const updateNavItem = (index, field, value) => {
+    const updated = [...form.nav_items];
+    updated[index] = { ...updated[index], [field]: value };
+    setForm({ ...form, nav_items: updated });
+  };
+
+  const removeNavItem = (index) => {
+    setForm({ ...form, nav_items: form.nav_items.filter((_, i) => i !== index) });
+  };
+
+  const addNavItem = () => {
+    setForm({ ...form, nav_items: [...form.nav_items, { name: "", page: "" }] });
+  };
+
+  const updateStatus = (type, index, field, value) => {
+    const statusKey = type === "project" ? "project_statuses" : "task_statuses";
+    const updated = [...form[statusKey]];
+    updated[index] = { ...updated[index], [field]: value };
+    setForm({ ...form, [statusKey]: updated });
+  };
+
+  const removeStatus = (type, index) => {
+    const statusKey = type === "project" ? "project_statuses" : "task_statuses";
+    setForm({ ...form, [statusKey]: form[statusKey].filter((_, i) => i !== index) });
+  };
+
+  const addStatus = (type) => {
+    const statusKey = type === "project" ? "project_statuses" : "task_statuses";
+    setForm({ ...form, [statusKey]: [...form[statusKey], { id: "", label: "", color: "#3B82F6" }] });
+  };
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
-        <p className="text-gray-500 text-sm mt-1">Personalize as informações gerais do aplicativo</p>
+        <p className="text-gray-500 text-sm mt-1">Personalize completamente seu aplicativo</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+      <Tabs defaultValue="general" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="general">Geral</TabsTrigger>
+          <TabsTrigger value="nav">Menu</TabsTrigger>
+          <TabsTrigger value="projects">Projetos</TabsTrigger>
+          <TabsTrigger value="tasks">Tarefas</TabsTrigger>
+        </TabsList>
 
-        {/* Logo */}
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Logotipo</Label>
-          <div className="mt-2 flex items-center gap-4">
-            <div
-              className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:border-blue-400 transition-colors flex-shrink-0"
-              style={{ backgroundColor: form.logo_url ? "transparent" : form.primary_color + "15" }}
-              onClick={() => fileRef.current.click()}
-            >
-              {form.logo_url ? (
-                <img src={form.logo_url} alt="logo" className="w-full h-full object-cover" />
-              ) : (
-                <ImagePlus className="w-7 h-7 text-gray-400" />
-              )}
+        {/* Geral */}
+        <TabsContent value="general" className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+          <div>
+            <Label className="text-sm font-medium text-gray-700">Logotipo</Label>
+            <div className="mt-2 flex items-center gap-4">
+              <div
+                className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:border-blue-400 transition-colors flex-shrink-0"
+                style={{ backgroundColor: form.logo_url ? "transparent" : form.primary_color + "15" }}
+                onClick={() => fileRef.current.click()}
+              >
+                {form.logo_url ? (
+                  <img src={form.logo_url} alt="logo" className="w-full h-full object-cover" />
+                ) : (
+                  <ImagePlus className="w-7 h-7 text-gray-400" />
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current.click()} disabled={uploading}>
+                  {uploading ? "Enviando..." : "Escolher imagem"}
+                </Button>
+                {form.logo_url && (
+                  <button type="button" onClick={() => setForm((f) => ({ ...f, logo_url: "" }))} className="text-xs text-red-500 hover:underline flex items-center gap-1">
+                    <X className="w-3 h-3" /> Remover
+                  </button>
+                )}
+              </div>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
             </div>
-            <div className="flex flex-col gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current.click()} disabled={uploading}>
-                {uploading ? "Enviando..." : "Escolher imagem"}
-              </Button>
-              {form.logo_url && (
-                <button type="button" onClick={() => setForm((f) => ({ ...f, logo_url: "" }))} className="text-xs text-red-500 hover:underline flex items-center gap-1">
-                  <X className="w-3 h-3" /> Remover
-                </button>
-              )}
-            </div>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
           </div>
-        </div>
 
-        {/* App Name */}
-        <div>
-          <Label htmlFor="app_name" className="text-sm font-medium text-gray-700">Nome do aplicativo</Label>
-          <Input
-            id="app_name"
-            className="mt-1"
-            value={form.app_name}
-            onChange={(e) => setForm({ ...form, app_name: e.target.value })}
-            placeholder="Ex: ProjectFlow"
-          />
-        </div>
+          <div>
+            <Label htmlFor="app_name" className="text-sm font-medium text-gray-700">Nome do aplicativo</Label>
+            <Input
+              id="app_name"
+              className="mt-1"
+              value={form.app_name}
+              onChange={(e) => setForm({ ...form, app_name: e.target.value })}
+              placeholder="Ex: ProjectFlow"
+            />
+          </div>
 
-        {/* App Description */}
-        <div>
-          <Label htmlFor="app_desc" className="text-sm font-medium text-gray-700">Subtítulo / Descrição</Label>
-          <Textarea
-            id="app_desc"
-            className="mt-1"
-            value={form.app_description}
-            onChange={(e) => setForm({ ...form, app_description: e.target.value })}
-            placeholder="Ex: Gestão de Projetos"
-            rows={2}
-          />
-        </div>
+          <div>
+            <Label htmlFor="app_desc" className="text-sm font-medium text-gray-700">Subtítulo / Descrição</Label>
+            <Textarea
+              id="app_desc"
+              className="mt-1"
+              value={form.app_description}
+              onChange={(e) => setForm({ ...form, app_description: e.target.value })}
+              placeholder="Ex: Gestão de Projetos"
+              rows={2}
+            />
+          </div>
 
-        {/* Primary Color */}
-        <div>
-          <Label className="text-sm font-medium text-gray-700">Cor principal</Label>
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {COLORS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setForm({ ...form, primary_color: c })}
-                className="w-8 h-8 rounded-full border-2 transition-all"
-                style={{ backgroundColor: c, borderColor: form.primary_color === c ? "#1F2937" : "transparent", transform: form.primary_color === c ? "scale(1.15)" : "scale(1)" }}
-              />
+          <div>
+            <Label className="text-sm font-medium text-gray-700">Cor principal</Label>
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setForm({ ...form, primary_color: c })}
+                  className="w-8 h-8 rounded-full border-2 transition-all"
+                  style={{ backgroundColor: c, borderColor: form.primary_color === c ? "#1F2937" : "transparent", transform: form.primary_color === c ? "scale(1.15)" : "scale(1)" }}
+                />
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Menu */}
+        <TabsContent value="nav" className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+          <div className="space-y-3">
+            {form.nav_items.map((item, idx) => (
+              <div key={idx} className="flex gap-2 items-end pb-3 border-b border-gray-100 last:border-b-0">
+                <div className="flex-1">
+                  <Label className="text-xs font-medium text-gray-700">Rótulo</Label>
+                  <Input
+                    value={item.name}
+                    onChange={(e) => updateNavItem(idx, "name", e.target.value)}
+                    placeholder="Ex: Dashboard"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-xs font-medium text-gray-700">Página</Label>
+                  <Input
+                    value={item.page}
+                    onChange={(e) => updateNavItem(idx, "page", e.target.value)}
+                    placeholder="Ex: Dashboard"
+                    className="mt-1"
+                  />
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => removeNavItem(idx)} className="text-red-500 hover:bg-red-50 hover:text-red-700">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             ))}
           </div>
-        </div>
-
-        {/* Save */}
-        <div className="pt-2 border-t border-gray-100 flex items-center justify-end gap-3">
-          {saved && (
-            <span className="flex items-center gap-1 text-sm text-green-600">
-              <CheckCircle2 className="w-4 h-4" /> Salvo com sucesso!
-            </span>
-          )}
-          <Button onClick={handleSave} disabled={saving} className="flex items-center gap-2">
-            <Save className="w-4 h-4" />
-            {saving ? "Salvando..." : "Salvar alterações"}
+          <Button variant="outline" onClick={addNavItem} className="w-full gap-2">
+            <Plus className="w-4 h-4" /> Adicionar item
           </Button>
-        </div>
+        </TabsContent>
+
+        {/* Projetos */}
+        <TabsContent value="projects" className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+          <div className="space-y-3">
+            {form.project_statuses.map((status, idx) => (
+              <div key={idx} className="flex gap-2 items-end pb-3 border-b border-gray-100 last:border-b-0">
+                <div className="flex-1">
+                  <Label className="text-xs font-medium text-gray-700">ID</Label>
+                  <Input
+                    value={status.id}
+                    onChange={(e) => updateStatus("project", idx, "id", e.target.value)}
+                    placeholder="Ex: active"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-xs font-medium text-gray-700">Rótulo</Label>
+                  <Input
+                    value={status.label}
+                    onChange={(e) => updateStatus("project", idx, "label", e.target.value)}
+                    placeholder="Ex: Ativo"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="w-16">
+                  <Label className="text-xs font-medium text-gray-700">Cor</Label>
+                  <div className="mt-1 flex gap-1">
+                    {COLORS.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => updateStatus("project", idx, "color", c)}
+                        className="w-6 h-6 rounded-full border-2 transition-all"
+                        style={{ backgroundColor: c, borderColor: status.color === c ? "#1F2937" : "transparent" }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => removeStatus("project", idx)} className="text-red-500 hover:bg-red-50 hover:text-red-700">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button variant="outline" onClick={() => addStatus("project")} className="w-full gap-2">
+            <Plus className="w-4 h-4" /> Adicionar status
+          </Button>
+        </TabsContent>
+
+        {/* Tarefas */}
+        <TabsContent value="tasks" className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+          <div className="space-y-3">
+            {form.task_statuses.map((status, idx) => (
+              <div key={idx} className="flex gap-2 items-end pb-3 border-b border-gray-100 last:border-b-0">
+                <div className="flex-1">
+                  <Label className="text-xs font-medium text-gray-700">ID</Label>
+                  <Input
+                    value={status.id}
+                    onChange={(e) => updateStatus("task", idx, "id", e.target.value)}
+                    placeholder="Ex: approved"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-xs font-medium text-gray-700">Rótulo</Label>
+                  <Input
+                    value={status.label}
+                    onChange={(e) => updateStatus("task", idx, "label", e.target.value)}
+                    placeholder="Ex: Aprovado"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="w-16">
+                  <Label className="text-xs font-medium text-gray-700">Cor</Label>
+                  <div className="mt-1 flex gap-1">
+                    {COLORS.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => updateStatus("task", idx, "color", c)}
+                        className="w-6 h-6 rounded-full border-2 transition-all"
+                        style={{ backgroundColor: c, borderColor: status.color === c ? "#1F2937" : "transparent" }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => removeStatus("task", idx)} className="text-red-500 hover:bg-red-50 hover:text-red-700">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button variant="outline" onClick={() => addStatus("task")} className="w-full gap-2">
+            <Plus className="w-4 h-4" /> Adicionar status
+          </Button>
+        </TabsContent>
+      </Tabs>
+
+      {/* Save */}
+      <div className="mt-6 flex items-center justify-end gap-3">
+        {saved && (
+          <span className="flex items-center gap-1 text-sm text-green-600">
+            <CheckCircle2 className="w-4 h-4" /> Salvo com sucesso!
+          </span>
+        )}
+        <Button onClick={handleSave} disabled={saving} className="flex items-center gap-2">
+          <Save className="w-4 h-4" />
+          {saving ? "Salvando..." : "Salvar todas as alterações"}
+        </Button>
       </div>
     </div>
   );

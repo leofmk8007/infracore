@@ -19,11 +19,18 @@ export default function Layout({ children, currentPageName }) {
   const logoUrl = settings.logo_url || "";
   const primaryColor = settings.primary_color || "#3B82F6";
 
-  const navItems = [
+  const DEFAULT_NAV_ITEMS = [
     { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
     { name: "Projetos", page: "Projects", icon: Users },
     { name: "Configurações", page: "Settings", icon: Settings },
   ];
+
+  const navItems = settings.nav_items?.length > 0 
+    ? settings.nav_items.map(item => ({
+        ...item,
+        icon: DEFAULT_NAV_ITEMS.find(d => d.page === item.page)?.icon || Users
+      }))
+    : DEFAULT_NAV_ITEMS;
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
