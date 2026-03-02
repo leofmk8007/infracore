@@ -71,15 +71,13 @@ export default function Settings() {
   };
 
   const handleSave = async () => {
-    // Validar campos obrigatórios
-    const emptyNavItems = form.nav_items.some(item => !item.name || !item.page);
-    const emptyProjectStatuses = form.project_statuses.some(s => !s.id || !s.label);
-    const emptyTaskStatuses = form.task_statuses.some(s => !s.id || !s.label);
-
-    if (emptyNavItems || emptyProjectStatuses || emptyTaskStatuses) {
-      alert("Preencha todos os campos antes de salvar");
-      return;
-    }
+    // Filtrar itens vazios antes de salvar
+    const filteredForm = {
+      ...form,
+      nav_items: form.nav_items.filter(item => item.name && item.page),
+      project_statuses: form.project_statuses.filter(s => s.id && s.label),
+      task_statuses: form.task_statuses.filter(s => s.id && s.label),
+    };
 
     setSaving(true);
     try {
