@@ -116,6 +116,7 @@ function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) 
   const [open, setOpen] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [detailTask, setDetailTask] = useState(null);
   const qc = useQueryClient();
 
   const subTasks = tasks.filter((t) => t.sub_project_id === subProject.id);
