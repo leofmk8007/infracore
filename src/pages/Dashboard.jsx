@@ -21,7 +21,7 @@ export default function Dashboard() {
   const activeClients = clients.filter((c) => c.status === "active").length;
 
   const stats = [
-    { label: "Projetos Ativos", value: activeClients, icon: FolderOpen, color: "bg-blue-50 text-blue-600" },
+    { label: "Obras Ativas", value: activeClients, icon: FolderOpen, color: "bg-blue-50 text-blue-600" },
     { label: "Aprovadas", value: approved, icon: CheckCircle2, color: "bg-green-50 text-green-600" },
     { label: "Em Análise", value: under_review, icon: Clock, color: "bg-yellow-50 text-yellow-600" },
     { label: "Reprovadas", value: rejected, icon: XCircle, color: "bg-red-50 text-red-600" },
@@ -42,7 +42,7 @@ export default function Dashboard() {
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Visão geral de todos os projetos</p>
+        <p className="text-gray-500 text-sm mt-1">Visão geral de todas as obras</p>
       </div>
 
       {/* Stats */}
@@ -61,7 +61,7 @@ export default function Dashboard() {
       {/* Projects List */}
       <div className="bg-white rounded-xl border border-gray-200">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Projetos Recentes</h2>
+          <h2 className="font-semibold text-gray-900">Obras Recentes</h2>
           <Link to={createPageUrl("Projects")} className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
             Ver todos <ArrowRight className="w-3 h-3" />
           </Link>
@@ -69,8 +69,8 @@ export default function Dashboard() {
         {clients.length === 0 ? (
           <div className="p-12 text-center text-gray-400">
             <FolderOpen className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <p className="text-sm">Nenhum projeto criado ainda</p>
-            <Link to={createPageUrl("Projects")} className="mt-3 inline-block text-sm text-blue-600 hover:underline">Criar primeiro projeto</Link>
+            <p className="text-sm">Nenhuma obra criada ainda</p>
+            <Link to={createPageUrl("Projects")} className="mt-3 inline-block text-sm text-blue-600 hover:underline">Criar primeira obra</Link>
           </div>
         ) : (
           <div className="divide-y divide-gray-50">

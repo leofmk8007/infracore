@@ -8,7 +8,7 @@ export default function Layout({ children, currentPageName }) {
 
   const navItems = [
     { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
-    { name: "Projetos", page: "Projects", icon: Users },
+    { name: "Obras", page: "Projects", icon: Users },
   ];
 
   return (
@@ -16,8 +16,8 @@ export default function Layout({ children, currentPageName }) {
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col w-60 bg-white border-r border-gray-200 fixed h-full z-10">
         <div className="p-6 border-b border-gray-100">
-          <h1 className="text-xl font-bold text-gray-900">ProjectFlow</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Gestão de Projetos</p>
+          <h1 className="text-xl font-bold text-gray-900">ObraFlow</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Gestão de Obras</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
