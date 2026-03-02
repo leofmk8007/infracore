@@ -1,5 +1,7 @@
-import { CheckCircle2, XCircle, Clock, ChevronRight, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ChevronRight, MoreHorizontal, Pencil, Trash2, CalendarDays } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const statusLabels = {
   active: { label: "Ativo", className: "bg-blue-100 text-blue-700" },
