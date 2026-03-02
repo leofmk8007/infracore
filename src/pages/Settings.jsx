@@ -70,6 +70,7 @@ export default function Settings() {
         nav_items: settings.nav_items || DEFAULT_SETTINGS.nav_items,
         project_statuses: projectCustom?.statuses || DEFAULT_SETTINGS.project_statuses,
         task_statuses: taskCustom?.statuses || DEFAULT_SETTINGS.task_statuses,
+        task_fields: taskCustom?.fields || DEFAULT_SETTINGS.task_fields,
       });
     }
   }, [settings, projectCustom, taskCustom]);
