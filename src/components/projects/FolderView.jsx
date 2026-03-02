@@ -76,13 +76,9 @@ function TaskRow({ task, onStatusChange, onEdit, onDelete, onOpenDetail, isAdmin
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 group">
       <FileText className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
-      {isAdmin ? (
-        <button onClick={() => onStatusChange(task, nextStatus[task.status])} className="flex-shrink-0" title="Mudar status">
-          <Icon className={`w-4 h-4 ${cfg.color}`} />
-        </button>
-      ) : (
-        <Icon className={`w-4 h-4 ${cfg.color} flex-shrink-0`} />
-      )}
+      <button onClick={() => onStatusChange(task, nextStatus[task.status])} className="flex-shrink-0" title="Mudar status">
+        <Icon className={`w-4 h-4 ${cfg.color}`} />
+      </button>
       <button
         onClick={() => onOpenDetail(task)}
         className={`text-sm flex-1 text-left hover:text-blue-600 transition-colors ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-800"}`}
