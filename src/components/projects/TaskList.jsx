@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { CheckCircle2, XCircle, Clock, Plus, Pencil, Trash2, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const STATUS_CONFIG = {
-  under_review: { label: "Em análise", icon: Clock, className: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  approved: { label: "Aprovada", icon: CheckCircle2, className: "bg-green-100 text-green-700 border-green-200" },
-  rejected: { label: "Reprovada", icon: XCircle, className: "bg-red-100 text-red-700 border-red-200" },
+const DEFAULT_TASK_STATUSES = [
+  { id: "under_review", label: "Em análise", color: "#F59E0B" },
+  { id: "approved", label: "Aprovada", color: "#10B981" },
+  { id: "rejected", label: "Reprovada", color: "#EF4444" },
+];
+
+const STATUS_ICON = {
+  under_review: Clock,
+  approved: CheckCircle2,
+  rejected: XCircle,
 };
 
 function TaskRow({ task, onStatusChange, onDelete, onEdit }) {
