@@ -111,11 +111,22 @@ export default function Projects() {
           <h1 className="text-2xl font-bold text-gray-900">Obras</h1>
           <p className="text-gray-500 text-sm mt-1">{clients.length} obra{clients.length !== 1 ? "s" : ""} cadastrada{clients.length !== 1 ? "s" : ""}</p>
         </div>
-        {isAdmin && (
-          <Button onClick={() => { setEditingClient(null); setShowModal(true); }} className="flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Nova Obra
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="created_date">Mais recentes</option>
+            <option value="updated_date">Última atualização</option>
+            <option value="name">Nome (A–Z)</option>
+          </select>
+          {isAdmin && (
+            <Button onClick={() => { setEditingClient(null); setShowModal(true); }} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Nova Obra
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="relative mb-6">
