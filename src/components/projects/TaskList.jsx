@@ -54,47 +54,6 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, onOpenDetail }) {
   );
 }
 
-function TaskForm({ clientId, task, onClose }) {
-  const [form, setForm] = useState({ title: task?.title || "", description: task?.description || "" });
-  const qc = useQueryClient();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.title.trim()) return;
-    if (task) {
-      await base44.entities.Task.update(task.id, form);
-    } else {
-      await base44.entities.Task.create({ ...form, client_id: clientId, status: "under_review" });
-    }
-    qc.invalidateQueries(["tasks"]);
-    onClose();
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="bg-blue-50 border border-blue-100 rounded-lg p-4 mt-2 space-y-3">
-      <Input
-        autoFocus
-        placeholder="Título da tarefa *"
-        value={form.title}
-        onChange={(e) => setForm({ ...form, title: e.target.value })}
-        required
-        className="bg-white"
-      />
-      <Textarea
-        placeholder="Descrição (opcional)"
-        value={form.description}
-        onChange={(e) => setForm({ ...form, description: e.target.value })}
-        rows={2}
-        className="bg-white"
-      />
-      <div className="flex gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={onClose}>Cancelar</Button>
-        <Button type="submit" size="sm">{task ? "Salvar" : "Adicionar"}</Button>
-      </div>
-    </form>
-  );
-}
-
 // ─── Folder section grouped by SubProject ───
 function FolderSection({ subProject, allSubProjects, tasks, clientId, depth = 0, onOpenDetail }) {
   const [open, setOpen] = useState(true);
