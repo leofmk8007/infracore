@@ -55,7 +55,7 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit }) {
 }
 
 function TaskForm({ clientId, task, onClose }) {
-  const [form, setForm] = useState({ title: task?.title || "", description: task?.description || "" });
+  const [form, setForm] = useState({ title: task?.title || "", description: task?.description || "", status: task?.status || "under_review" });
   const qc = useQueryClient();
 
   const handleSubmit = async (e) => {
