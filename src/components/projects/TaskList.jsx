@@ -175,15 +175,21 @@ export default function TaskList({ client, tasks, onBack }) {
 
           {/* Progress */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 bg-gray-100 rounded-full h-2">
-              <div className="bg-green-500 h-2 rounded-full transition-all" style={{ width: `${percent}%` }} />
-            </div>
-            <span className="text-sm font-semibold text-gray-700">{percent}%</span>
+           <div className="flex-1 bg-gray-100 rounded-full h-2">
+             <div className="h-2 rounded-full transition-all" style={{ backgroundColor: taskStatuses[0]?.color || "#10B981", width: `${percent}%` }} />
+           </div>
+           <span className="text-sm font-semibold text-gray-700">{percent}%</span>
           </div>
-          <div className="flex gap-4 mt-3 text-xs text-gray-500">
-            <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> {approved} aprovadas</span>
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-yellow-500" /> {clientTasks.filter(t => t.status === "under_review").length} em análise</span>
-            <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-red-400" /> {clientTasks.filter(t => t.status === "rejected").length} reprovadas</span>
+          <div className="flex gap-4 mt-3 text-xs text-gray-500 flex-wrap">
+           {taskStatuses.map(status => {
+             const count = clientTasks.filter(t => t.status === status.id).length;
+             const Icon = STATUS_ICON[status.id] || Clock;
+             return (
+               <span key={status.id} className="flex items-center gap-1">
+                 <Icon className="w-3.5 h-3.5" style={{ color: status.color }} /> {count} {status.label.toLowerCase()}
+               </span>
+             );
+           })}
           </div>
         </div>
 
