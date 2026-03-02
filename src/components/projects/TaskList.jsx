@@ -87,6 +87,18 @@ function TaskForm({ clientId, task, onClose }) {
         rows={2}
         className="bg-white"
       />
+      {task && (
+        <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+          <SelectTrigger className="bg-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="under_review">Em análise</SelectItem>
+            <SelectItem value="approved">Aprovada</SelectItem>
+            <SelectItem value="rejected">Reprovada</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
       <div className="flex gap-2">
         <Button type="button" variant="outline" size="sm" onClick={onClose}>Cancelar</Button>
         <Button type="submit" size="sm">{task ? "Salvar" : "Adicionar"}</Button>
