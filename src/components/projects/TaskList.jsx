@@ -66,8 +66,12 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses }) {
   );
 }
 
-function TaskForm({ clientId, task, onClose }) {
-  const [form, setForm] = useState({ title: task?.title || "", description: task?.description || "", status: task?.status || "under_review" });
+function TaskForm({ clientId, task, onClose, taskStatuses }) {
+  const [form, setForm] = useState({ 
+    title: task?.title || "", 
+    description: task?.description || "", 
+    status: task?.status || (taskStatuses[0]?.id || "under_review")
+  });
   const qc = useQueryClient();
 
   const handleSubmit = async (e) => {
@@ -76,7 +80,7 @@ function TaskForm({ clientId, task, onClose }) {
     if (task) {
       await base44.entities.Task.update(task.id, form);
     } else {
-      await base44.entities.Task.create({ ...form, client_id: clientId, status: "under_review" });
+      await base44.entities.Task.create({ ...form, client_id: clientId, status: form.status });
     }
     qc.invalidateQueries(["tasks"]);
     onClose();
@@ -105,9 +109,11 @@ function TaskForm({ clientId, task, onClose }) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="under_review">Em análise</SelectItem>
-            <SelectItem value="approved">Aprovada</SelectItem>
-            <SelectItem value="rejected">Reprovada</SelectItem>
+            {taskStatuses.map(status => (
+              <SelectItem key={status.id} value={status.id}>
+                {status.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       )}
