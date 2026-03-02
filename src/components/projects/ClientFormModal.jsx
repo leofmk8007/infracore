@@ -45,6 +45,35 @@ export default function ClientFormModal({ open, onClose, onSave, client }) {
           <DialogTitle>{client ? "Editar Projeto" : "Novo Projeto"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+          {/* Icon Upload */}
+          <div>
+            <Label>Ícone do projeto</Label>
+            <div className="mt-2 flex items-center gap-3">
+              <div
+                className="w-16 h-16 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer hover:border-blue-400 transition-colors"
+                style={{ backgroundColor: form.icon_url ? "transparent" : (form.color + "20") }}
+                onClick={() => fileRef.current.click()}
+              >
+                {form.icon_url ? (
+                  <img src={form.icon_url} alt="ícone" className="w-full h-full object-cover" />
+                ) : (
+                  <ImagePlus className="w-6 h-6 text-gray-400" />
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current.click()} disabled={uploading}>
+                  {uploading ? "Enviando..." : "Escolher imagem"}
+                </Button>
+                {form.icon_url && (
+                  <button type="button" onClick={() => setForm((f) => ({ ...f, icon_url: "" }))} className="text-xs text-red-500 hover:underline flex items-center gap-1">
+                    <X className="w-3 h-3" /> Remover
+                  </button>
+                )}
+              </div>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+            </div>
+          </div>
+
           <div>
             <Label htmlFor="name">Nome do projeto *</Label>
             <Input
