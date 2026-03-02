@@ -121,7 +121,6 @@ function SubProjectNode({ subProject, allSubProjects, tasks, clientId, depth = 0
   const levelLabel = depth === 0 ? "Subserviço" : "Subserviço";
 
   const handleStatusChange = async (task, newStatus) => {
-    if (!isAdmin) return;
     await base44.entities.Task.update(task.id, { status: newStatus });
     qc.invalidateQueries(["tasks"]);
   };
