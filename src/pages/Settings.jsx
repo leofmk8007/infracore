@@ -127,7 +127,14 @@ export default function Settings() {
 
   const addStatus = (type) => {
     const statusKey = type === "project" ? "project_statuses" : "task_statuses";
-    setForm({ ...form, [statusKey]: [...form[statusKey], { id: "", label: "", color: "#3B82F6" }] });
+    const newForm = { ...form, [statusKey]: [...form[statusKey], { id: "", label: "", color: "#3B82F6" }] };
+    setForm(newForm);
+    setTimeout(() => {
+      const inputs = document.querySelectorAll(`input[placeholder="Ex: ${type === "project" ? "active" : "approved"}"]`);
+      if (inputs.length > 0) {
+        inputs[inputs.length - 1].scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+    }, 0);
   };
 
   return (
