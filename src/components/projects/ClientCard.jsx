@@ -17,6 +17,11 @@ export default function ClientCard({ client, tasks, onClick, onEdit, onDelete })
   const percent = clientTasks.length ? Math.round((approved / clientTasks.length) * 100) : 0;
   const st = statusLabels[client.status] || statusLabels.active;
 
+  const lastUpdated = client.updated_date || client.created_date;
+  const lastUpdatedLabel = lastUpdated
+    ? formatDistanceToNow(new Date(lastUpdated), { addSuffix: true, locale: ptBR })
+    : null;
+
   return (
     <div
       className="bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow cursor-pointer group"
