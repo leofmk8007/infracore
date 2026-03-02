@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,10 +11,24 @@ import { ImagePlus, X } from "lucide-react";
 
 const COLORS = ["#3B82F6", "#8B5CF6", "#10B981", "#F59E0B", "#EF4444", "#EC4899", "#14B8A6", "#F97316"];
 
+const DEFAULT_STATUSES = [
+  { id: "active", label: "Ativo" },
+  { id: "completed", label: "Concluído" },
+  { id: "on_hold", label: "Em espera" },
+];
+
 export default function ClientFormModal({ open, onClose, onSave, client }) {
   const [form, setForm] = useState({ name: "", description: "", status: "active", color: "#3B82F6", icon_url: "" });
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef();
+
+  const { data: settingsList = [] } = useQuery({
+    queryKey: ["app_settings"],
+    queryFn: () => base44.entities.AppSettings.list(),
+  });
+
+  const settings = settingsList[0];
+  const projectStatuses = settings?.project_statuses || DEFAULT_STATUSES;
 
   useEffect(() => {
     if (client) {
