@@ -168,7 +168,7 @@ export default function Projects() {
               key={client.id}
               client={client}
               tasks={tasks}
-              onClick={() => handleSelectClient(client, "list")}
+              onClick={() => handleSelectClient(client, "folder")}
               onEdit={(c) => { setEditingClient(c); setShowModal(true); }}
               onDelete={handleDeleteClient}
             />
