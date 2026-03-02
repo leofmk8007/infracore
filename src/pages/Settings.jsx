@@ -30,6 +30,7 @@ const DEFAULT_SETTINGS = {
     { id: "approved", label: "Aprovado", color: "#10B981" },
     { id: "rejected", label: "Rejeitado", color: "#EF4444" },
   ],
+  task_fields: [],
 };
 
 export default function Settings() {
