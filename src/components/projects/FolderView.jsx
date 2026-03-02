@@ -83,7 +83,7 @@ function TaskForm({ clientId, subProjectId, task, onClose }) {
 }
 
 // ─── Task Row ───
-function TaskRow({ task, onStatusChange, onEdit, onDelete }) {
+function TaskRow({ task, onStatusChange, onEdit, onDelete, onOpenDetail }) {
   const cfg = STATUS_CONFIG[task.status] || STATUS_CONFIG.under_review;
   const Icon = cfg.icon;
   const nextStatus = { under_review: "approved", approved: "rejected", rejected: "under_review" };
@@ -94,9 +94,12 @@ function TaskRow({ task, onStatusChange, onEdit, onDelete }) {
       <button onClick={() => onStatusChange(task, nextStatus[task.status])} className="flex-shrink-0" title="Mudar status">
         <Icon className={`w-4 h-4 ${cfg.color}`} />
       </button>
-      <span className={`text-sm flex-1 ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-800"}`}>
+      <button
+        onClick={() => onOpenDetail(task)}
+        className={`text-sm flex-1 text-left hover:text-blue-600 transition-colors ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-800"}`}
+      >
         {task.title}
-      </span>
+      </button>
       <span className={`text-xs px-1.5 py-0.5 rounded-full border font-medium ${cfg.badge} opacity-0 group-hover:opacity-100`}>
         {cfg.label}
       </span>
