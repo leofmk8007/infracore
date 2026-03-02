@@ -72,15 +72,27 @@ export default function Settings() {
 
   const handleSave = async () => {
     setSaving(true);
-    if (settings) {
-      await base44.entities.AppSettings.update(settings.id, form);
-    } else {
-      await base44.entities.AppSettings.create(form);
+    try {
+      const dataToSave = {
+        ...form,
+        nav_items: form.nav_items.filter(item => item.name && item.page),
+        project_statuses: form.project_statuses.filter(s => s.id && s.label),
+        task_statuses: form.task_statuses.filter(s => s.id && s.label),
+      };
+      
+      if (settings && settings.id) {
+        await base44.entities.AppSettings.update(settings.id, dataToSave);
+      } else {
+        await base44.entities.AppSettings.create(dataToSave);
+      }
+      qc.invalidateQueries({ queryKey: ["app_settings"] });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+    } finally {
+      setSaving(false);
     }
-    qc.invalidateQueries(["app_settings"]);
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
   };
 
   const updateNavItem = (index, field, value) => {
