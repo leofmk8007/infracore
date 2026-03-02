@@ -195,14 +195,20 @@ export default function TaskList({ client, tasks, onBack }) {
 
         {/* Filter + Add */}
         <div className="px-4 pt-4 flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex gap-1 text-xs">
-            {[["all", "Todas"], ["under_review", "Em análise"], ["approved", "Aprovadas"], ["rejected", "Reprovadas"]].map(([val, lbl]) => (
+          <div className="flex gap-1 text-xs flex-wrap">
+            <button
+              onClick={() => setFilter("all")}
+              className={`px-3 py-1 rounded-full border font-medium transition-colors ${filter === "all" ? "bg-gray-900 text-white border-gray-900" : "text-gray-600 border-gray-200 hover:bg-gray-50"}`}
+            >
+              Todas
+            </button>
+            {taskStatuses.map(status => (
               <button
-                key={val}
-                onClick={() => setFilter(val)}
-                className={`px-3 py-1 rounded-full border font-medium transition-colors ${filter === val ? "bg-gray-900 text-white border-gray-900" : "text-gray-600 border-gray-200 hover:bg-gray-50"}`}
+                key={status.id}
+                onClick={() => setFilter(status.id)}
+                className={`px-3 py-1 rounded-full border font-medium transition-colors ${filter === status.id ? "bg-gray-900 text-white border-gray-900" : "text-gray-600 border-gray-200 hover:bg-gray-50"}`}
               >
-                {lbl}
+                {status.label}
               </button>
             ))}
           </div>
