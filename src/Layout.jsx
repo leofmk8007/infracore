@@ -59,7 +59,10 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 h-14">
-        <h1 className="text-lg font-bold text-gray-900">ProjectFlow</h1>
+        <div className="flex items-center gap-2">
+          {logoUrl && <img src={logoUrl} alt="logo" className="w-6 h-6 rounded object-cover" />}
+          <h1 className="text-lg font-bold text-gray-900">{appName}</h1>
+        </div>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
