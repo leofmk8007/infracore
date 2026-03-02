@@ -105,26 +105,52 @@ export default function Projects() {
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-        <Input
-          placeholder="Buscar projetos..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      {/* Search and View Toggle */}
+      <div className="flex gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            placeholder="Buscar projetos..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+          <Button
+            variant={viewMode === "list" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("list")}
+            className="gap-2"
+          >
+            <List className="w-4 h-4" />
+            <span className="hidden sm:inline">Lista</span>
+          </Button>
+          <Button
+            variant={viewMode === "board" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("board")}
+            className="gap-2"
+          >
+            <LayoutGrid className="w-4 h-4" />
+            <span className="hidden sm:inline">Board</span>
+          </Button>
+        </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {filtered.length === 0 && !search ? (
         <div className="text-center py-20 text-gray-400">
           <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p className="text-base font-medium">Nenhum projeto encontrado</p>
-          <p className="text-sm mt-1">
-            {search ? "Tente um termo diferente" : "Clique em 'Novo Projeto' para começar"}
-          </p>
+          <p className="text-sm mt-1">Clique em 'Novo Projeto' para começar</p>
         </div>
-      ) : (
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-20 text-gray-400">
+          <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <p className="text-base font-medium">Nenhum projeto encontrado</p>
+          <p className="text-sm mt-1">Tente um termo diferente</p>
+        </div>
+      ) : viewMode === "list" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((client) => (
             <ClientCard
@@ -137,6 +163,16 @@ export default function Projects() {
             />
           ))}
         </div>
+      ) : (
+        <ProjectKanbanBoard
+          clients={filtered}
+          tasks={tasks}
+          projectStatuses={projectStatuses}
+          onEdit={(c) => { setEditingClient(c); setShowModal(true); }}
+          onDelete={handleDeleteClient}
+          onSelectClient={handleSelectClient}
+          qc={qc}
+        />
       )}
 
       <ClientFormModal
