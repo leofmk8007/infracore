@@ -1,0 +1,298 @@
+import { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Folder, FolderOpen, ChevronRight, ChevronDown, Plus, Pencil, Trash2,
+  CheckCircle2, XCircle, Clock, ChevronLeft, FileText
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+const STATUS_CONFIG = {
+  under_review: { label: "Em análise", icon: Clock, color: "text-yellow-500", badge: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+  approved: { label: "Aprovada", icon: CheckCircle2, color: "text-green-500", badge: "bg-green-100 text-green-700 border-green-200" },
+  rejected: { label: "Reprovada", icon: XCircle, color: "text-red-400", badge: "bg-red-100 text-red-700 border-red-200" },
+};
+
+// ─── Inline form for sub-projects ───
+function SubProjectForm({ clientId, subProject, onClose }) {
+  const [form, setForm] = useState({ name: subProject?.name || "", description: subProject?.description || "" });
+  const qc = useQueryClient();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name.trim()) return;
+    if (subProject) {
+      await base44.entities.SubProject.update(subProject.id, form);
+    } else {
+      await base44.entities.SubProject.create({ ...form, client_id: clientId });
+    }
+    qc.invalidateQueries(["subprojects"]);
+    onClose();
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 py-1 px-2 bg-blue-50 rounded-lg border border-blue-100">
+      <Input
+        autoFocus
+        placeholder="Nome da etapa *"
+        value={form.name}
+        onChange={(e) => setForm({ ...form, name: e.target.value })}
+        required
+        className="bg-white h-7 text-sm flex-1"
+      />
+      <Button type="submit" size="sm" className="h-7 px-3 text-xs">{subProject ? "Salvar" : "Criar"}</Button>
+      <Button type="button" variant="outline" size="sm" className="h-7 px-3 text-xs" onClick={onClose}>X</Button>
+    </form>
+  );
+}
+
+// ─── Inline form for tasks ───
+function TaskForm({ clientId, subProjectId, task, onClose }) {
+  const [form, setForm] = useState({ title: task?.title || "", description: task?.description || "" });
+  const qc = useQueryClient();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.title.trim()) return;
+    if (task) {
+      await base44.entities.Task.update(task.id, { ...form });
+    } else {
+      await base44.entities.Task.create({ ...form, client_id: clientId, sub_project_id: subProjectId, status: "under_review" });
+    }
+    qc.invalidateQueries(["tasks"]);
+    onClose();
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="ml-8 flex items-center gap-2 py-1 px-2 bg-gray-50 rounded-lg border border-gray-200">
+      <Input
+        autoFocus
+        placeholder="Título da tarefa *"
+        value={form.title}
+        onChange={(e) => setForm({ ...form, title: e.target.value })}
+        required
+        className="bg-white h-7 text-sm flex-1"
+      />
+      <Button type="submit" size="sm" className="h-7 px-3 text-xs">{task ? "Salvar" : "Adicionar"}</Button>
+      <Button type="button" variant="outline" size="sm" className="h-7 px-3 text-xs" onClick={onClose}>X</Button>
+    </form>
+  );
+}
+
+// ─── Task Row ───
+function TaskRow({ task, onStatusChange, onEdit, onDelete }) {
+  const cfg = STATUS_CONFIG[task.status] || STATUS_CONFIG.under_review;
+  const Icon = cfg.icon;
+  const nextStatus = { under_review: "approved", approved: "rejected", rejected: "under_review" };
+
+  return (
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 group ml-8">
+      <FileText className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+      <button onClick={() => onStatusChange(task, nextStatus[task.status])} className="flex-shrink-0" title="Mudar status">
+        <Icon className={`w-4 h-4 ${cfg.color}`} />
+      </button>
+      <span className={`text-sm flex-1 ${task.status === "rejected" ? "line-through text-gray-400" : "text-gray-800"}`}>
+        {task.title}
+      </span>
+      <span className={`text-xs px-1.5 py-0.5 rounded-full border font-medium ${cfg.badge} opacity-0 group-hover:opacity-100`}>
+        {cfg.label}
+      </span>
+      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button onClick={() => onEdit(task)} className="p-1 text-gray-400 hover:text-gray-700 rounded"><Pencil className="w-3 h-3" /></button>
+        <button onClick={() => onDelete(task)} className="p-1 text-gray-400 hover:text-red-500 rounded"><Trash2 className="w-3 h-3" /></button>
+      </div>
+    </div>
+  );
+}
+
+// ─── SubProject Row (pasta filha) ───
+function SubProjectRow({ subProject, tasks, clientId, onDeleteSub, onEditSub }) {
+  const [open, setOpen] = useState(true);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const qc = useQueryClient();
+
+  const subTasks = tasks.filter((t) => t.sub_project_id === subProject.id);
+  const approved = subTasks.filter((t) => t.status === "approved").length;
+  const percent = subTasks.length ? Math.round((approved / subTasks.length) * 100) : 0;
+
+  const handleStatusChange = async (task, newStatus) => {
+    await base44.entities.Task.update(task.id, { status: newStatus });
+    qc.invalidateQueries(["tasks"]);
+  };
+
+  const handleDeleteTask = async (task) => {
+    await base44.entities.Task.delete(task.id);
+    qc.invalidateQueries(["tasks"]);
+  };
+
+  return (
+    <div className="ml-4 border-l-2 border-gray-100 pl-2">
+      {/* Sub-project header */}
+      <div className="flex items-center gap-1.5 py-1.5 px-2 rounded-lg hover:bg-gray-50 group cursor-pointer" onClick={() => setOpen(!open)}>
+        {open ? <ChevronDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />}
+        {open ? <FolderOpen className="w-4 h-4 text-amber-400 flex-shrink-0" /> : <Folder className="w-4 h-4 text-amber-400 flex-shrink-0" />}
+        <span className="text-sm font-medium text-gray-800 flex-1">{subProject.name}</span>
+
+        {subTasks.length > 0 && (
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <div className="w-16 bg-gray-200 rounded-full h-1">
+              <div className="bg-green-400 h-1 rounded-full" style={{ width: `${percent}%` }} />
+            </div>
+            <span>{percent}%</span>
+          </div>
+        )}
+
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-1" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => { setShowTaskForm(true); setEditingTask(null); }}
+            className="p-1 text-gray-400 hover:text-blue-600 rounded text-xs flex items-center gap-0.5"
+            title="Nova tarefa"
+          >
+            <Plus className="w-3 h-3" />
+          </button>
+          <button onClick={() => onEditSub(subProject)} className="p-1 text-gray-400 hover:text-gray-700 rounded"><Pencil className="w-3 h-3" /></button>
+          <button onClick={() => onDeleteSub(subProject)} className="p-1 text-gray-400 hover:text-red-500 rounded"><Trash2 className="w-3 h-3" /></button>
+        </div>
+      </div>
+
+      {/* Tasks */}
+      {open && (
+        <div className="space-y-0.5">
+          {showTaskForm && (
+            <TaskForm clientId={clientId} subProjectId={subProject.id} onClose={() => setShowTaskForm(false)} />
+          )}
+          {subTasks.map((task) =>
+            editingTask?.id === task.id ? (
+              <div key={task.id} className="ml-8">
+                <TaskForm clientId={clientId} subProjectId={subProject.id} task={task} onClose={() => setEditingTask(null)} />
+              </div>
+            ) : (
+              <TaskRow
+                key={task.id}
+                task={task}
+                onStatusChange={handleStatusChange}
+                onEdit={(t) => { setEditingTask(t); setShowTaskForm(false); }}
+                onDelete={handleDeleteTask}
+              />
+            )
+          )}
+          {subTasks.length === 0 && !showTaskForm && (
+            <p className="ml-8 text-xs text-gray-400 py-1 italic">Nenhuma tarefa — clique em + para adicionar</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main FolderView ───
+export default function FolderView({ client, subProjects, tasks, onBack }) {
+  const [open, setOpen] = useState(true);
+  const [showSubForm, setShowSubForm] = useState(false);
+  const [editingSub, setEditingSub] = useState(null);
+  const qc = useQueryClient();
+
+  const clientSubProjects = subProjects.filter((s) => s.client_id === client.id);
+  const clientTasks = tasks.filter((t) => t.client_id === client.id);
+  const approved = clientTasks.filter((t) => t.status === "approved").length;
+  const percent = clientTasks.length ? Math.round((approved / clientTasks.length) * 100) : 0;
+
+  const handleDeleteSub = async (sub) => {
+    if (!confirm(`Excluir a etapa "${sub.name}"? As tarefas também serão excluídas.`)) return;
+    const subTasks = tasks.filter((t) => t.sub_project_id === sub.id);
+    await Promise.all(subTasks.map((t) => base44.entities.Task.delete(t.id)));
+    await base44.entities.SubProject.delete(sub.id);
+    qc.invalidateQueries(["subprojects"]);
+    qc.invalidateQueries(["tasks"]);
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-5 transition-colors">
+        <ChevronLeft className="w-4 h-4" /> Voltar para projetos
+      </button>
+
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        {/* Project header */}
+        <div className="p-5 border-b border-gray-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: client.color || "#3B82F6" }} />
+            <h2 className="text-xl font-bold text-gray-900">{client.name}</h2>
+          </div>
+          {client.description && <p className="text-sm text-gray-500 mb-3">{client.description}</p>}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-gray-100 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full transition-all" style={{ width: `${percent}%` }} />
+            </div>
+            <span className="text-sm font-semibold text-gray-700">{percent}%</span>
+          </div>
+          <div className="flex gap-4 mt-2 text-xs text-gray-500">
+            <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> {approved} aprovadas</span>
+            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-yellow-500" /> {clientTasks.filter(t => t.status === "under_review").length} em análise</span>
+            <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-red-400" /> {clientTasks.filter(t => t.status === "rejected").length} reprovadas</span>
+          </div>
+        </div>
+
+        {/* Tree */}
+        <div className="p-4">
+          {/* Root project folder */}
+          <div
+            className="flex items-center gap-1.5 py-1.5 px-2 rounded-lg hover:bg-gray-50 cursor-pointer group"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+            {open
+              ? <FolderOpen className="w-5 h-5 flex-shrink-0" style={{ color: client.color || "#3B82F6" }} />
+              : <Folder className="w-5 h-5 flex-shrink-0" style={{ color: client.color || "#3B82F6" }} />
+            }
+            <span className="text-base font-semibold text-gray-900 flex-1">{client.name}</span>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowSubForm(true); setEditingSub(null); }}
+              className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded border border-transparent hover:border-blue-200 hover:bg-blue-50"
+            >
+              <Plus className="w-3.5 h-3.5" /> Nova etapa
+            </button>
+          </div>
+
+          {open && (
+            <div className="space-y-1 mt-1">
+              {showSubForm && !editingSub && (
+                <div className="ml-4">
+                  <SubProjectForm clientId={client.id} onClose={() => setShowSubForm(false)} />
+                </div>
+              )}
+
+              {clientSubProjects.length === 0 && !showSubForm && (
+                <p className="ml-8 text-xs text-gray-400 py-2 italic">Nenhuma etapa criada — clique em "+ Nova etapa"</p>
+              )}
+
+              {clientSubProjects.map((sub) =>
+                editingSub?.id === sub.id ? (
+                  <div key={sub.id} className="ml-4">
+                    <SubProjectForm
+                      clientId={client.id}
+                      subProject={sub}
+                      onClose={() => setEditingSub(null)}
+                    />
+                  </div>
+                ) : (
+                  <SubProjectRow
+                    key={sub.id}
+                    subProject={sub}
+                    tasks={tasks}
+                    clientId={client.id}
+                    onDeleteSub={handleDeleteSub}
+                    onEditSub={(s) => { setEditingSub(s); setShowSubForm(false); }}
+                  />
+                )
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
