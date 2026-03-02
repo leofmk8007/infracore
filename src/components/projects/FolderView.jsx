@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import TaskDetailModal from "./TaskDetailModal";
 
 const STATUS_CONFIG = {
   under_review: { label: "Em análise", icon: Clock, color: "text-yellow-500", badge: "bg-yellow-100 text-yellow-700 border-yellow-200" },
