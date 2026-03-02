@@ -83,8 +83,22 @@ export default function ClientCard({ client, tasks, onClick, onEdit, onDelete })
       </div>
 
       <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
-        <span>{clientTasks.length} tarefa{clientTasks.length !== 1 ? "s" : ""} no total</span>
-        <ChevronRight className="w-4 h-4 group-hover:text-blue-600 transition-colors" />
+        <div className="flex items-center gap-3">
+          <span>{clientTasks.length} tarefa{clientTasks.length !== 1 ? "s" : ""} no total</span>
+          {under_review > 0 && (
+            <span className="flex items-center gap-1 text-amber-500 font-medium">
+              <Clock className="w-3 h-3" /> {under_review} pendente{under_review !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {lastUpdatedLabel && (
+            <span className="flex items-center gap-1 text-gray-400">
+              <CalendarDays className="w-3 h-3" /> {lastUpdatedLabel}
+            </span>
+          )}
+          <ChevronRight className="w-4 h-4 group-hover:text-blue-600 transition-colors" />
+        </div>
       </div>
     </div>
   );
