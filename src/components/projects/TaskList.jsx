@@ -19,20 +19,24 @@ const STATUS_ICON = {
   rejected: XCircle,
 };
 
-function TaskRow({ task, onStatusChange, onDelete, onEdit }) {
-  const cfg = STATUS_CONFIG[task.status] || STATUS_CONFIG.under_review;
-  const Icon = cfg.icon;
+function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses }) {
+  const statusConfig = taskStatuses.find(s => s.id === task.status);
+  const label = statusConfig?.label || "Desconhecido";
+  const color = statusConfig?.color || "#6B7280";
+  const Icon = STATUS_ICON[task.status] || Clock;
 
-  const nextStatus = { under_review: "approved", approved: "rejected", rejected: "under_review" };
+  const statusIds = taskStatuses.map(s => s.id);
+  const currentIdx = statusIds.indexOf(task.status);
+  const nextStatus = statusIds[(currentIdx + 1) % statusIds.length];
 
   return (
     <div className="flex items-start gap-3 py-3 px-4 hover:bg-gray-50 rounded-lg group transition-colors">
       <button
-        onClick={() => onStatusChange(task, nextStatus[task.status])}
+        onClick={() => onStatusChange(task, nextStatus)}
         className="mt-0.5 flex-shrink-0"
         title="Clique para mudar status"
       >
-        <Icon className={`w-5 h-5 ${task.status === "approved" ? "text-green-500" : task.status === "rejected" ? "text-red-400" : "text-yellow-500"}`} />
+        <Icon className="w-5 h-5" style={{ color }} />
       </button>
 
       <div className="flex-1 min-w-0">
@@ -45,7 +49,9 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit }) {
       </div>
 
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-        <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.className}`}>{cfg.label}</span>
+        <span className="text-xs px-2 py-0.5 rounded-full border font-medium" style={{ backgroundColor: color + "20", color, borderColor: color }}>
+          {label}
+        </span>
         <button onClick={() => onEdit(task)} className="p-1 text-gray-400 hover:text-gray-700 rounded">
           <Pencil className="w-3.5 h-3.5" />
         </button>
@@ -53,8 +59,8 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit }) {
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
-      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cfg.className} opacity-100 group-hover:hidden flex-shrink-0`}>
-        {cfg.label}
+      <span className="text-xs px-2 py-0.5 rounded-full border font-medium opacity-100 group-hover:hidden flex-shrink-0" style={{ backgroundColor: color + "20", color, borderColor: color }}>
+        {label}
       </span>
     </div>
   );
