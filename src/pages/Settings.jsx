@@ -116,7 +116,11 @@ export default function Settings() {
       }
 
       // Save TaskCustomization
-      const taskCustomData = { statuses: filteredTaskStatuses };
+      const filteredTaskFields = form.task_fields.filter(f => f.id && f.label);
+      const taskCustomData = { 
+        statuses: filteredTaskStatuses,
+        fields: filteredTaskFields
+      };
       if (taskCustom && taskCustom.id) {
         await base44.entities.TaskCustomization.update(taskCustom.id, taskCustomData);
       } else {
