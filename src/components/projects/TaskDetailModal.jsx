@@ -115,6 +115,11 @@ export default function TaskDetailModal({ task, taskStatuses, taskFields = [], o
               </div>
             </div>
           )}
+
+          {/* Comentários */}
+          <div className="border-t border-gray-100 pt-4">
+            <TaskComments taskId={task.id} />
+          </div>
         </div>
       </div>
     </div>
