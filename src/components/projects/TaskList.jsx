@@ -20,7 +20,7 @@ const STATUS_ICON = {
   rejected: XCircle,
 };
 
-function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses, taskFields = [] }) {
+function TaskRow({ task, onStatusChange, onDelete, onEdit, onView, taskStatuses, taskFields = [] }) {
   const statusConfig = taskStatuses.find(s => s.id === task.status);
   const label = statusConfig?.label || "Desconhecido";
   const color = statusConfig?.color || "#6B7280";
@@ -31,7 +31,7 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses, taskFie
   const nextStatus = statusIds[(currentIdx + 1) % statusIds.length];
 
   return (
-    <div className="flex items-start gap-3 py-3 px-4 hover:bg-gray-50 rounded-lg group transition-colors">
+    <div className="flex items-start gap-3 py-3 px-4 hover:bg-gray-50 rounded-lg group transition-colors cursor-pointer" onClick={() => onView(task)}>
       <button
         onClick={() => onStatusChange(task, nextStatus)}
         className="mt-0.5 flex-shrink-0"
