@@ -356,6 +356,15 @@ export default function TaskList({ client, tasks, onBack }) {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {viewingTask && (
+        <TaskDetailModal
+          task={viewingTask}
+          taskStatuses={taskStatuses}
+          taskFields={taskFields}
+          onClose={() => setViewingTask(null)}
+          onEdit={() => { setEditingTask(viewingTask); setViewingTask(null); setShowForm(false); }}
+        />
+      )}
       {/* Header */}
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 mb-5 transition-colors">
         <ChevronLeft className="w-4 h-4" /> Voltar para projetos
