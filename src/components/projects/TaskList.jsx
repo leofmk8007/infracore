@@ -86,12 +86,65 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses, taskFie
   );
 }
 
+function AttachmentsField({ attachments = [], onChange }) {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setUploading(true);
+    const uploaded = [];
+    for (const file of files) {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      uploaded.push({ name: file.name, url: file_url, type: file.type });
+    }
+    onChange([...attachments, ...uploaded]);
+    setUploading(false);
+    e.target.value = "";
+  };
+
+  const remove = (idx) => onChange(attachments.filter((_, i) => i !== idx));
+
+  const isImage = (att) => att.type?.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp)$/i.test(att.name);
+
+  return (
+    <div>
+      <label className="text-xs font-medium text-gray-700 flex items-center gap-1">
+        <Paperclip className="w-3.5 h-3.5" /> Anexos
+      </label>
+      <div className="mt-1 space-y-2">
+        {attachments.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {attachments.map((att, idx) => (
+              <div key={idx} className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs group">
+                {isImage(att) ? <Image className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" /> : <FileText className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />}
+                <a href={att.url} target="_blank" rel="noreferrer" className="max-w-[120px] truncate text-gray-700 hover:text-blue-600 hover:underline">
+                  {att.name}
+                </a>
+                <button type="button" onClick={() => remove(idx)} className="text-gray-300 hover:text-red-500 ml-0.5">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <label className={`flex items-center gap-2 px-3 py-2 border border-dashed border-blue-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-xs text-blue-600 ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
+          <Paperclip className="w-3.5 h-3.5" />
+          {uploading ? "Enviando..." : "Clique para anexar documentos ou fotos"}
+          <input type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" className="hidden" onChange={handleFileChange} disabled={uploading} />
+        </label>
+      </div>
+    </div>
+  );
+}
+
 function TaskForm({ clientId, task, onClose, taskStatuses, taskFields = [] }) {
   const [form, setForm] = useState({ 
     title: task?.title || "", 
     description: task?.description || "", 
     status: task?.status || (taskStatuses[0]?.id || "under_review"),
-    custom_fields: task?.custom_fields || {}
+    custom_fields: task?.custom_fields || {},
+    attachments: task?.attachments || []
   });
   const qc = useQueryClient();
 
