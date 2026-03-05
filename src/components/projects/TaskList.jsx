@@ -449,6 +449,7 @@ export default function TaskList({ client, tasks, onBack }) {
                   onStatusChange={handleStatusChange}
                   onDelete={handleDelete}
                   onEdit={(t) => { setEditingTask(t); setShowForm(false); }}
+                  onView={(t) => setViewingTask(t)}
                   taskStatuses={taskStatuses}
                   taskFields={taskFields}
                 />
