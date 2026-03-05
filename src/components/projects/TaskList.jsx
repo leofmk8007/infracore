@@ -272,6 +272,14 @@ function TaskForm({ clientId, task, onClose, taskStatuses, taskFields = [] }) {
         </div>
       )}
 
+      {/* Anexos */}
+      <div className="pt-2 border-t border-blue-200">
+        <AttachmentsField
+          attachments={form.attachments}
+          onChange={(attachments) => setForm(prev => ({ ...prev, attachments }))}
+        />
+      </div>
+
       {task && (
         <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
           <SelectTrigger className="bg-white">
