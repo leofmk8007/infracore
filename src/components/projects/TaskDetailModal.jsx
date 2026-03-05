@@ -1,5 +1,6 @@
 import { FileText, Image, ExternalLink, X, CheckCircle2, XCircle, Clock, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import TaskComments from "./TaskComments";
 
 const STATUS_ICON = {
   under_review: Clock,
