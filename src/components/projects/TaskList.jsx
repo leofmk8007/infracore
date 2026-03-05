@@ -66,6 +66,23 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, taskStatuses, taskFie
             })}
           </div>
         )}
+        {/* Anexos */}
+        {task.attachments?.length > 0 && (
+          <div className="flex gap-1.5 mt-1.5 flex-wrap">
+            {task.attachments.map((att, idx) => {
+              const isImg = att.type?.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp)$/i.test(att.name);
+              return (
+                <a key={idx} href={att.url} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition-colors"
+                >
+                  {isImg ? <Image className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
+                  <span className="max-w-[100px] truncate">{att.name}</span>
+                  <ExternalLink className="w-2.5 h-2.5 opacity-50" />
+                </a>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
