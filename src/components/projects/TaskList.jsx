@@ -90,10 +90,10 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, onView, taskStatuses,
         <span className="text-xs px-2 py-0.5 rounded-full border font-medium" style={{ backgroundColor: color + "20", color, borderColor: color }}>
           {label}
         </span>
-        <button onClick={() => onEdit(task)} className="p-1 text-gray-400 hover:text-gray-700 rounded">
+        <button onClick={(e) => { e.stopPropagation(); onEdit(task); }} className="p-1 text-gray-400 hover:text-gray-700 rounded">
           <Pencil className="w-3.5 h-3.5" />
         </button>
-        <button onClick={() => onDelete(task)} className="p-1 text-gray-400 hover:text-red-500 rounded">
+        <button onClick={(e) => { e.stopPropagation(); onDelete(task); }} className="p-1 text-gray-400 hover:text-red-500 rounded">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
