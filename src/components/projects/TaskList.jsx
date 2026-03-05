@@ -152,9 +152,9 @@ function TaskForm({ clientId, task, onClose, taskStatuses, taskFields = [] }) {
     e.preventDefault();
     if (!form.title.trim()) return;
     if (task) {
-      await base44.entities.Task.update(task.id, { title: form.title, description: form.description, status: form.status, custom_fields: form.custom_fields });
+      await base44.entities.Task.update(task.id, { title: form.title, description: form.description, status: form.status, custom_fields: form.custom_fields, attachments: form.attachments });
     } else {
-      await base44.entities.Task.create({ title: form.title, description: form.description, client_id: clientId, status: form.status, custom_fields: form.custom_fields });
+      await base44.entities.Task.create({ title: form.title, description: form.description, client_id: clientId, status: form.status, custom_fields: form.custom_fields, attachments: form.attachments });
     }
     qc.invalidateQueries(["tasks"]);
     onClose();
