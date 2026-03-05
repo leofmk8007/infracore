@@ -33,7 +33,7 @@ function TaskRow({ task, onStatusChange, onDelete, onEdit, onView, taskStatuses,
   return (
     <div className="flex items-start gap-3 py-3 px-4 hover:bg-gray-50 rounded-lg group transition-colors cursor-pointer" onClick={() => onView(task)}>
       <button
-        onClick={() => onStatusChange(task, nextStatus)}
+        onClick={(e) => { e.stopPropagation(); onStatusChange(task, nextStatus); }}
         className="mt-0.5 flex-shrink-0"
         title="Clique para mudar status"
       >
