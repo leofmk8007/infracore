@@ -1,0 +1,75 @@
+{
+  "name": "AppSettings",
+  "type": "object",
+  "properties": {
+    "app_name": {
+      "type": "string",
+      "description": "Nome do aplicativo"
+    },
+    "app_description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o ou subt\u00edtulo do app"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL do logotipo do app"
+    },
+    "primary_color": {
+      "type": "string",
+      "description": "Cor principal do app",
+      "default": "#3B82F6"
+    },
+    "nav_items": {
+      "type": "array",
+      "description": "Itens do menu de navega\u00e7\u00e3o",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "page": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "project_statuses": {
+      "type": "array",
+      "description": "Status customiz\u00e1veis para projetos",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "task_statuses": {
+      "type": "array",
+      "description": "Status customiz\u00e1veis para tarefas",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": []
+}

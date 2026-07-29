@@ -1,0 +1,36 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do cliente / projeto"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do projeto"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "on_hold"
+      ],
+      "default": "active",
+      "description": "Status atual do projeto"
+    },
+    "color": {
+      "type": "string",
+      "description": "Cor para identifica\u00e7\u00e3o visual",
+      "default": "#3B82F6"
+    },
+    "icon_url": {
+      "type": "string",
+      "description": "URL da imagem de \u00edcone do projeto"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

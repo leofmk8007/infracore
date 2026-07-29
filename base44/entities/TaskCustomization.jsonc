@@ -1,0 +1,69 @@
+{
+  "name": "TaskCustomization",
+  "type": "object",
+  "properties": {
+    "statuses": {
+      "type": "array",
+      "description": "Status customiz\u00e1veis para tarefas",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "fields": {
+      "type": "array",
+      "description": "Campos customiz\u00e1veis para tarefas",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "date",
+              "select",
+              "number",
+              "file"
+            ]
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          },
+          "options": {
+            "type": "array",
+            "description": "Op\u00e7\u00f5es para campos do tipo select",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": []
+}

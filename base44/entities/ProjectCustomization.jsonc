@@ -1,0 +1,25 @@
+{
+  "name": "ProjectCustomization",
+  "type": "object",
+  "properties": {
+    "statuses": {
+      "type": "array",
+      "description": "Status customiz\u00e1veis para projetos",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": []
+}
